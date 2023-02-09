@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @user_review_comment %>
+
+<div>
+  <%= link_to "Edit this user review comment", edit_user_review_comment_path(@user_review_comment) %> |
+  <%= link_to "Back to user review comments", user_review_comments_path %>
+
+  <%= button_to "Destroy this user review comment", @user_review_comment, method: :delete %>
+</div>

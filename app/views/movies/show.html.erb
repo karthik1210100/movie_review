@@ -1,0 +1,31 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @movie %>
+<h4>Rate the movie</h4>
+<%= render 'ratings/form', rating:@movie.ratings.build %>
+<h4>Total Ratings</h4>
+<%= Movie.find(@movie.id).ratings.group(:rating).count %>
+<h4>Review</h4>
+<%= render 'reviews/form', review:@movie.reviews.build %>
+<table>
+  <tbody>
+    <% @movie.reviews.each do |movie| %>
+      <% if movie.about %>
+      <h4><%= movie.about %></h4>
+      <%= link_to "Show review", movie_review_path(@movie,movie) %> |
+      <% if can? :edit, movie %>
+      <%= link_to "Edit review", edit_movie_review_path(@movie,movie) %>  |
+      <%= button_to "Destroy review", movie_review_path(@movie,movie), method: :delete %>
+      <%#= render 'user_review_comments/form', user_review_comment: movie.user_review_comments.build %>
+  <% end %>
+  <% end %>
+  <% end %>
+  </tbody>
+</table>
+
+
+<div>
+  <%= link_to "Edit this movie", edit_movie_path(@movie) %> |
+  <%= link_to "Back to movies", movies_path %>
+  <%= button_to "Destroy this movie", @movie, method: :delete %>
+</div>

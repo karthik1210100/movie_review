@@ -1,0 +1,18 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @review %>
+
+<h4>Created by : <%= User.find(@review.user_id).email %></h4>
+
+<div>
+  <%= render 'user_review_comments/form', user_review_comment: @review.user_review_comments.build %>
+  <% @review.user_review_comments.each do |comment| %><br>
+    <%= comment.comment %><br>
+  <% end %>
+</div>
+<%= link_to "Back to movie", movie_path(@movie) %>
+
+<div>
+  <%= link_to "Edit this review", edit_movie_review_path(@movie) %> |
+  <%= button_to "Destroy this review", movie_review_path(@movie), method: :delete %>
+</div>

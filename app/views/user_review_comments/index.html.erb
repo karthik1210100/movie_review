@@ -1,0 +1,14 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>User review comments</h1>
+
+<div id="user_review_comments">
+  <% @user_review_comments.each do |user_review_comment| %>
+    <%= render user_review_comment %>
+    <p>
+      <%= link_to "Show this user review comment", user_review_comment %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New user review comment", new_user_review_comment_path %>
