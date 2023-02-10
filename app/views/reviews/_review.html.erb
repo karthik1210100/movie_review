@@ -6,7 +6,7 @@
 
   <p>
     <strong>Movie:</strong>
-    <%= review.movie_id %>
+    <%= Review.find(@review.id).movie.name %>
   </p>
 
 </div>

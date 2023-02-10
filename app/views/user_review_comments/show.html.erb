@@ -1,10 +1,21 @@
 <p style="color: green"><%= notice %></p>
 
-<%= render @user_review_comment %>
+<%#= render @user_review_comment %>
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th class="table-primary">Review's Comment</th>
+    <th class="table-primary text-center" colspan="3" >Action</th>
+  </tr>
+  </thead>
+<tbody>
+  <td class="table-info"><%= render @user_review_comment %></td>
+  <td class="table-info"><%= link_to "Back to review", movie_review_path(@movie, @review), class: 'btn btn-outline-secondary' %></td>
+  <% if can? :edit, @user_review_comment %>
+  <td class="table-info"><%= link_to "Edit this user review comment", edit_movie_review_user_review_comment_path(@user_review_comment), class: 'btn btn-outline-secondary' %></td>
+  <td class="table-info"><%= button_to "Destroy this user review comment", movie_review_user_review_comment_path	, method: :delete, class: 'btn btn-outline-secondary' %></td>
+<% end %>
+  </tbody>
 
-<div>
-  <%= link_to "Edit this user review comment", edit_user_review_comment_path(@user_review_comment) %> |
-  <%= link_to "Back to user review comments", user_review_comments_path %>
-
-  <%= button_to "Destroy this user review comment", @user_review_comment, method: :delete %>
-</div>
+<div></div>
+</table>

@@ -1,31 +1,61 @@
 <p style="color: green"><%= notice %></p>
+<%= image_tag(@movie.avatar, size: "200x200") %>
 
 <%= render @movie %>
-<h4>Rate the movie</h4>
-<%= render 'ratings/form', rating:@movie.ratings.build %>
-<h4>Total Ratings</h4>
-<%= Movie.find(@movie.id).ratings.group(:rating).count %>
+
+<%#= form_with(url: movie_rating_movie_path(@movie), method: :post) do |f| %>
+    <%# MovieRating::RATINGS.each do |rating, rate| %>
+      <%#= f.radio_button "movie[rating]", rate  %> <%#= rating %>
+    <%# end %>
+    <%#= f.submit %>
+  <%# end %>
+<!--<div>-->
+
+<strong>Rate the movie</strong>
+<%= form_with(url: movie_rating_movie_path(@movie), method: :post, class: "form-check") do |f| %>
+  <div class="form-check-inline">
+    <% MovieRating::RATINGS.each do |rating, rate| %>
+      <div class="form-check">
+        <%= f.radio_button "movie[rating]", rate, class: "form-check-input" %>
+        <label class="form-check-label"><%= rating %></label>
+      </div>
+    <% end %>
+  </div>
+  <%= f.submit "Rate", class: "btn btn-primary" %>
+<% end %>
+</div>
+
 <h4>Review</h4>
 <%= render 'reviews/form', review:@movie.reviews.build %>
-<table>
+<% if @movie.reviews.second != nil %>
+<table class="table table-striped">
+  <thead>
+<tr>
+  <th class="table-primary">About</th>
+  <th class="table-primary text-center" colspan="3" >Action</th>
+</tr>
+  </thead>
   <tbody>
     <% @movie.reviews.each do |movie| %>
+    <tr>
       <% if movie.about %>
-      <h4><%= movie.about %></h4>
-      <%= link_to "Show review", movie_review_path(@movie,movie) %> |
+        <td class="table-info"><%= movie.about %></td>
+        <td class="table-info"><%= link_to "Show review's comment", movie_review_path(@movie,movie), class: 'btn btn-outline-primary' %></td>
       <% if can? :edit, movie %>
-      <%= link_to "Edit review", edit_movie_review_path(@movie,movie) %>  |
-      <%= button_to "Destroy review", movie_review_path(@movie,movie), method: :delete %>
-      <%#= render 'user_review_comments/form', user_review_comment: movie.user_review_comments.build %>
+          <td class="table-info"><%= link_to "Edit review", edit_movie_review_path(@movie,movie), class: 'btn btn-outline-primary' %></td>
+          <td class="table-info"><%= button_to "Destroy review", movie_review_path(@movie,movie), class: 'btn btn-outline-primary', method: :delete %></td>
+        <% end %>
   <% end %>
-  <% end %>
+    </tr>
   <% end %>
   </tbody>
 </table>
+  <% end %>
+<table>
+  <tr>
+    <th class="table-warning"> <%= link_to "Edit this movie", edit_movie_path(@movie), class: 'btn btn-outline-secondary' %></th>
+    <th class="table-info"><%= button_to "Destroy this movie", @movie, method: :delete, class: 'btn btn-outline-danger' %></th>
+    <th class="table-info"><%= link_to "Back to movies", movies_path, class: 'btn btn-outline-secondary' %></th>
+  </tr>
+</table>
 
-
-<div>
-  <%= link_to "Edit this movie", edit_movie_path(@movie) %> |
-  <%= link_to "Back to movies", movies_path %>
-  <%= button_to "Destroy this movie", @movie, method: :delete %>
-</div>

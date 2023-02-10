@@ -2,12 +2,37 @@
 
 <h1>Movies</h1>
 
-<div id="movies">
-  <% @movies.each do |movie| %>
-        <%= render movie %>
-        Average rating: <%= number_with_precision(movie.ratings.average(:rating),precision: 2)%>
-        <p><%= link_to "Show this movie", movie %></p>
-  <% end %>
+<!--<div id="movies">-->
+  <%# @movies.each do |movie| %>
+    <%#= image_tag(movie.avatar, size: "200x200") %>
+    <%#= render movie %>
+<!--    <strong>Average rating: </strong><%#= movie.average_rating %>-->
+<!--        <p><%#= link_to "Show this movie", movie, class: 'btn btn-outline-secondary' %></p>-->
+  <%# end %>
+<!--</div>-->
+
+
+<div class="container">
+  <div class="row">
+    <% @movies.each do |movie| %>
+      <div class="col-md-6">
+        <div class="card mb-6 box-shadow">
+          <%= image_tag(movie.avatar, size: "200x200") %>
+          <div class="card-body">
+            <%= render movie %>
+            <% if movie.average_rating %>
+            <strong>Average rating: </strong><%= movie.average_rating %>
+              <% end %>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="btn-group">
+                <%= link_to "Show this movie", movie, class: 'btn btn-outline-secondary' %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
 </div>
 
-<%= link_to "New movie", new_movie_path %>
+<%= link_to "New movie", new_movie_path, class: 'btn btn-outline-primary' %>

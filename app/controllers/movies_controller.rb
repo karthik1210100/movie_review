@@ -1,6 +1,7 @@
 class MoviesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_movie, only: %i[ show edit update destroy ]
+  before_action :set_movie, only: %i[ show edit update destroy movie_rating]
+
 
   # GET /movies or /movies.json
   def index
@@ -10,6 +11,7 @@ class MoviesController < ApplicationController
 
   # GET /movies/1 or /movies/1.json
   def show
+    @rating = @movie.group_by_rating
   end
 
   # GET /movies/new
@@ -55,12 +57,35 @@ class MoviesController < ApplicationController
     @movie.destroy
 
     respond_to do |format|
-      format.html { redirect_to [@movie], notice: "Movie was successfully destroyed." }
+      format.html { redirect_to root_url, notice: "Movie was successfully destroyed." }
       format.json { head :no_content }
     end
   end
 
+  def movie_rating
+    if @movie.movie_ratings.exists?(:user_id=>[current_user.id] ) !=true
+      @movie.movie_ratings.create(rating: movie_params.dig('rating'), user_id: current_user.id)
+      avg_rating = @movie.movie_ratings.average(:rating)
+      @movie.update_columns(average_rating: avg_rating)
 
+      respond_to do |format|
+        format.html {
+          redirect_to [@movie],
+                      notice: "Movie was successfully rated." }
+        # format.js { flash[:notice] = "Movie was successfully rated." }
+      end
+    else
+      @movie.movie_ratings.find_by(:user_id=>current_user.id).update(rating: movie_params.dig('rating'))
+      avg_rating = @movie.movie_ratings.average(:rating)
+      @movie.update_columns(average_rating: avg_rating)
+      respond_to do |format|
+        format.html {
+          redirect_to [@movie],
+                      notice: "Movie was successfully updated." }
+        # format.js { flash[:notice] = "Movie was successfully updated." }
+      end
+    end
+  end
 
   private
     # Use callbacks to share common setup or constraints between actions.
@@ -70,6 +95,6 @@ class MoviesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def movie_params
-      params.require(:movie).permit(:name, :released_at)
+      params.require(:movie).permit(:name, :released_at, :rating, :avatar)
     end
 end

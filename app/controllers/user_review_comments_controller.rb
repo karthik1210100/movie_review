@@ -55,7 +55,7 @@ class UserReviewCommentsController < ApplicationController
     @user_review_comment.destroy
 
     respond_to do |format|
-      format.html { redirect_to user_review_comments_url, notice: "User review comment was successfully destroyed." }
+      format.html { redirect_to [@movie, @review], notice: "User review comment was successfully destroyed." }
       format.json { head :no_content }
     end
   end

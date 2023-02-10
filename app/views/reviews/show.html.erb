@@ -6,13 +6,37 @@
 
 <div>
   <%= render 'user_review_comments/form', user_review_comment: @review.user_review_comments.build %>
+  <% if @review.user_review_comments.second != nil %>
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th class="table-primary">Comments</th>
+      <th class="table-primary" colspan="3" align="center" >Action</th>
+    </tr>
+    </thead>
+    <tbody>
   <% @review.user_review_comments.each do |comment| %><br>
-    <%= comment.comment %><br>
+      <tr>
+    <% if comment.comment %>
+          <td class="table-info"><%= comment.comment %></td>
+          <% if can? :edit, comment %>
+          <td class="table-info"><%= link_to "Show comment", movie_review_user_review_comment_path(@movie, @review, comment), class: 'btn btn-outline-secondary' %></td>
+            <td class="table-info"><a class="table-info"><%= link_to "Edit this comment", edit_movie_review_path(@movie), class: 'btn btn-outline-secondary' %></a></td>
+            <td class="table-info"><a class="table-info"><%= button_to "Destroy this comment", movie_review_path(@movie), class: 'btn btn-outline-secondary', method: :delete %></a></td>
+            <% else %>
+            <td class="table-info"><%= link_to "Show comment", movie_review_user_review_comment_path(@movie, @review, comment), class: 'btn btn-outline-secondary' %></td>
+
+      <% end %>
+          </tr>
   <% end %>
+    <% end %>
+    </tbody>
+  </table>
+    <% end %>
 </div>
-<%= link_to "Back to movie", movie_path(@movie) %>
 
 <div>
-  <%= link_to "Edit this review", edit_movie_review_path(@movie) %> |
-  <%= button_to "Destroy this review", movie_review_path(@movie), method: :delete %>
+  <a class="table-info"><%= link_to "Back to movie", movie_path(@movie), class: 'btn btn-outline-secondary' %></a>
+
+
 </div>
