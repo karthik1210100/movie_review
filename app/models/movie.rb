@@ -8,5 +8,6 @@ class Movie < ApplicationRecord
   def group_by_rating
     movie_ratings.group(:rating).count
   end
+  scope :movie_filter, ->(start_date = Date.yesterday, end_date = Date.today){where("released_at between ? and ?",start_date,end_date)}
 
 end

@@ -18,13 +18,14 @@
   <% @review.user_review_comments.each do |comment| %><br>
       <tr>
     <% if comment.comment %>
-          <td class="table-info"><%= comment.comment %></td>
+          <td class="table-info"><%= comment.comment %><br>
+            Created by : <%= comment.user.email %></td>
           <% if can? :edit, comment %>
-          <td class="table-info"><%= link_to "Show comment", movie_review_user_review_comment_path(@movie, @review, comment), class: 'btn btn-outline-secondary' %></td>
+<!--            <td class="table-info"><%#= link_to "Show comment", movie_review_user_review_comment_path(@movie, @review, comment), class: 'btn btn-outline-secondary' %></td>-->
             <td class="table-info"><a class="table-info"><%= link_to "Edit this comment", edit_movie_review_path(@movie), class: 'btn btn-outline-secondary' %></a></td>
             <td class="table-info"><a class="table-info"><%= button_to "Destroy this comment", movie_review_path(@movie), class: 'btn btn-outline-secondary', method: :delete %></a></td>
             <% else %>
-            <td class="table-info"><%= link_to "Show comment", movie_review_user_review_comment_path(@movie, @review, comment), class: 'btn btn-outline-secondary' %></td>
+<!--            <td class="table-info"><%#= link_to "Show comment", movie_review_user_review_comment_path(@movie, @review, comment), class: 'btn btn-outline-secondary' %></td>-->
 
       <% end %>
           </tr>

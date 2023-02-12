@@ -5,7 +5,8 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
   has_many :movies
   # has_many :reviews
-  validates :name, presence: true, uniqueness: true
+  validates :email, presence: true, uniqueness: true
   has_many :user_review_comments
   has_many :reviews, through: :user_review_comments
+  has_one_attached :avatar,dependent: :destroy
 end

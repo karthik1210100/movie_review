@@ -10,7 +10,11 @@
 <!--        <p><%#= link_to "Show this movie", movie, class: 'btn btn-outline-secondary' %></p>-->
   <%# end %>
 <!--</div>-->
-
+<%#= form_with method: :get do |form| %>
+  <%#= form.date_field :start_date, require: true %>
+  <%#= form.date_field :end_date, require: true %>
+  <%#= form.submit "Show detail" %>
+<%# end %>
 
 <div class="container">
   <div class="row">
@@ -35,4 +39,16 @@
   </div>
 </div>
 
+<div class="paginate">
+  <%= will_paginate @movies, :container => false, :previous_label => 'Previous', :next_label => 'Next', :class => 'pagination', :inner_window => '2', :outer_window => '2' %>
+</div>
+
+
 <%= link_to "New movie", new_movie_path, class: 'btn btn-outline-primary' %>
+
+<% if params.has_key?(:start_date) %>
+<%= link_to "Back", :back , class: 'btn btn-outline-secondary' %>
+<% end %>
+
+
+

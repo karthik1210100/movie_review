@@ -14,10 +14,21 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
   </head>
   <% if user_signed_in? %>
-  <div class="navbar navbar-expand-lg navbar">
+  <div class="navbar navbar-expand-lg navbar " style="background-color: #CCCCCC" >
     <div class="container-fluid">
-    <h4>Logged in as : <%= current_user.email %></h4>
-    <div class="dropdown show" >
+      <% if current_user.avatar.attached? %>
+        <%= image_tag(current_user.avatar, size: '35x35', style: 'border-radius: 50%') %><h5><%= current_user.email %></h5>
+      <% else %>
+        <img src="https://ui-avatars.com/api/?name=<%= current_user.email %>" alt="avatar 1" style="width: 45px; height: 100%; border-radius: 50%"><h5><%= current_user.email %></h5>
+      <% end %>
+      <div class="justify-content-end">
+      <%= form_with method: :get do |form| %>
+        <%= form.date_field :start_date, require: true %>
+        <%= form.date_field :end_date, require: true %>
+        <%= form.submit "Show detail" %>
+      <% end %>
+    </div>
+    <div class="dropdown show " >
       <a class="btn btn-secondary dropdown-toggle" href="#" type="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         User
       </a>
@@ -29,8 +40,10 @@
     </div>
   </div>
   <% else %>
+  <div class="navbar navbar-expand-lg navbar justify-content-start" style="background-color: #CCCCCC">
+    <h3>Please Log in to access </h3>
     <div class="dropdown show">
-      <a class="btn btn-secondary dropdown-toggle" href="#" type="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <a class="btn btn-secondary dropdown-toggle " href="#" type="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         User
       </a>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
@@ -39,10 +52,11 @@
         <a class="dropdown-item" href="#"><%= link_to 'Sign-Up', new_user_registration_path %></a>
       </div>
     </div>
+  </div>
   <% end %>
 
-      <!--    <p class="notice"><%#= notice %></p>-->
-      <!--    <p class="alert"><%#= alert %></p>-->
+          <p class="notice"><%= notice %></p>
+          <p class="alert"><%= alert %></p>
 
     <%= yield %>
   </body>
