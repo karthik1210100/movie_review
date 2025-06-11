@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>MovieReview</title>
+    <title>Movie Review</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
@@ -21,28 +21,21 @@
       <% else %>
         <img src="https://ui-avatars.com/api/?name=<%= current_user.email %>" alt="avatar 1" style="width: 45px; height: 100%; border-radius: 50%"><h5><%= current_user.email %></h5>
       <% end %>
-      <div class="justify-content-end">
-      <%= form_with method: :get do |form| %>
-        <%= form.date_field :start_date, require: true %>
-        <%= form.date_field :end_date, require: true %>
-        <%= form.submit "Show detail" %>
-      <% end %>
-    </div>
     <div class="dropdown show " >
       <a class="btn btn-secondary dropdown-toggle" href="#" type="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         User
       </a>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
       <a class="dropdown-item" href="#"><%= link_to 'Edit Profile', edit_user_registration_path %></a>
-      <a class="dropdown-item" href="#"><%= link_to 'Log Out', destroy_user_session_path, method: :delete,data: {confirm: 'Are you sure'} %></a>
+        <a class="dropdown-item" href="#"><%= link_to 'Log Out', destroy_user_session_path, method: :delete,data: {confirm: 'Are you sure'} %></a>
       </div>
     </div>
     </div>
   </div>
   <% else %>
   <div class="navbar navbar-expand-lg navbar justify-content-start" style="background-color: #CCCCCC">
-    <h3>Please Log in to access </h3>
-    <div class="dropdown show">
+    <h3>Sign-in to access </h3>
+    <div class="dropdown show justify-content-end">
       <a class="btn btn-secondary dropdown-toggle " href="#" type="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         User
       </a>
@@ -54,16 +47,8 @@
     </div>
   </div>
   <% end %>
-
-          <p class="notice"><%= notice %></p>
-          <p class="alert"><%= alert %></p>
-
+<!--          <p class="notice"><%#= notice %></p>-->
+<!--          <p class="alert"><%#= alert %></p>-->
     <%= yield %>
   </body>
 </html>
-<!--data: { "turbo-method": :delete}-->
-<%#= link_to 'Edit Profile', edit_user_registration_path %>
-<%#= link_to 'Log Out', destroy_user_session_path, method: :delete %>
-<%# else %>
-<%#= link_to 'Sign_In', new_user_session_path %>
-<%#= link_to 'Sign_Up', new_user_registration_path %>

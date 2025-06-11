@@ -1,9 +1,11 @@
 <p style="color: green"><%= notice %></p>
 
 <%= render @review %>
-
+<% if @review.user.present? %>
 <h4>Created by : <%= User.find(@review.user_id).email %></h4>
-
+<% else %>
+  <strong>Created by </strong>: User suspended
+  <% end %>
 <div>
   <%= render 'user_review_comments/form', user_review_comment: @review.user_review_comments.build %>
   <% if @review.user_review_comments.second != nil %>
@@ -11,19 +13,23 @@
     <thead>
     <tr>
       <th class="table-primary">Comments</th>
-      <th class="table-primary" colspan="3" align="center" >Action</th>
+<!--      <th class="table-primary" colspan="3" align="center" >Action</th>-->
     </tr>
     </thead>
     <tbody>
-  <% @review.user_review_comments.each do |comment| %><br>
+  <% @review.user_review_comments.includes(:user).each do |comment| %><br>
       <tr>
     <% if comment.comment %>
           <td class="table-info"><%= comment.comment %><br>
+            <% if comment.user.present? %>
             Created by : <%= comment.user.email %></td>
+              <% else %>
+            Created by : User suspended
+              <% end %>
           <% if can? :edit, comment %>
 <!--            <td class="table-info"><%#= link_to "Show comment", movie_review_user_review_comment_path(@movie, @review, comment), class: 'btn btn-outline-secondary' %></td>-->
-            <td class="table-info"><a class="table-info"><%= link_to "Edit this comment", edit_movie_review_path(@movie), class: 'btn btn-outline-secondary' %></a></td>
-            <td class="table-info"><a class="table-info"><%= button_to "Destroy this comment", movie_review_path(@movie), class: 'btn btn-outline-secondary', method: :delete %></a></td>
+            <td class="table-info"><a class="table-info"><%= link_to "Edit this comment", edit_movie_review_user_review_comment_path(@movie,@review,comment), class: 'btn btn-outline-secondary' %></a></td>
+            <td class="table-info"><a class="table-info"><%= button_to "Destroy this comment", movie_review_user_review_comment_path(@movie,@review,comment), class: 'btn btn-outline-secondary', method: :delete %></a></td>
             <% else %>
 <!--            <td class="table-info"><%#= link_to "Show comment", movie_review_user_review_comment_path(@movie, @review, comment), class: 'btn btn-outline-secondary' %></td>-->
 

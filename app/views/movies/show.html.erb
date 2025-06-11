@@ -1,29 +1,80 @@
 <p style="color: green"><%= notice %></p>
+<% if @movie.avatar.present? %>
 <%= image_tag(@movie.avatar, size: "200x200") %>
-
+  <% else %>
+  <%= image_tag("https://via.placeholder.com/200?text=No image", size: "200x200" ) %>
+<% end %>
 <%= render @movie %>
 
-<%#= form_with(url: movie_rating_movie_path(@movie), method: :post) do |f| %>
-    <%# MovieRating::RATINGS.each do |rating, rate| %>
-      <%#= f.radio_button "movie[rating]", rate  %> <%#= rating %>
-    <%# end %>
-    <%#= f.submit %>
-  <%# end %>
-<!--<div>-->
-
+<div>
 <strong>Rate the movie</strong>
 <%= form_with(url: movie_rating_movie_path(@movie), method: :post, class: "form-check") do |f| %>
   <div class="form-check-inline">
     <% MovieRating::RATINGS.each do |rating, rate| %>
       <div class="form-check">
-        <%= f.radio_button "movie[rating]", rate, class: "form-check-input" %>
+        <%= f.radio_button "movie[rating]", rate, class: "form-check-input star-rating" %>
         <label class="form-check-label"><%= rating %></label>
       </div>
     <% end %>
   </div>
   <%= f.submit "Rate", class: "btn btn-primary" %>
 <% end %>
+
+<strong>Ratings</strong>
+<div class="container">
+  <div class="row">
+    <% j = 5 %>
+    <% 5.times do %>
+      <div class="col-md-2 star-rating">
+        <% j.times do %>
+          <span class="star-rating-star">&#9733;</span>
+        <%end %>
+        <% if (Movie.find(@movie.id).movie_ratings.group(:rating).count[j]) == nil %>
+          <span class="star-rating-count"><%= 0 %></span>
+        <%end %>
+        <span class="star-rating-count"><%= Movie.find(@movie.id).movie_ratings.group(:rating).count[j] %></span>
+        <% j = j - 1 %>
+      </div>
+    <% end %>
+  </div>
 </div>
+
+
+<style>
+    .star-rating {
+        font-size: 20px;
+        margin: 10px;
+        padding: 10px;
+        background-color: #f3f3f3;
+        border-radius: 5px;
+    }
+
+    .star-rating-star {
+        color: #ffcc00;
+    }
+
+    .star-rating-count {
+        font-size: 12px;
+        margin-left: 5px;
+        color: #888;
+    }
+</style>
+</div>
+
+<style>
+    body {
+        background-color: #f3f3f3;
+    }
+
+    .btn {
+        padding: 10px;
+    }
+
+    h4 {
+        padding: 10px;
+        font-weight: bold;
+    }
+</style>
 
 <h4>Review</h4>
 <%= render 'reviews/form', review:@movie.reviews.build %>
@@ -36,10 +87,15 @@
 </tr>
   </thead>
   <tbody>
-    <% @movie.reviews.each do |movie| %>
-    <tr>
+    <% @movie.reviews.includes(:user).each do |movie| %>
       <% if movie.about %>
-        <td class="table-info"><%= movie.about %></td>
+        <td class="table-info"><%= movie.about %><br>
+          <% if movie.user.present? %>
+        Created by :<%= movie.user.email %><br>
+            <% else %>
+          Created by : User suspended<br>
+            <% end %>
+        Comments :<%= movie.user_review_comments.count %></td>
         <td class="table-info"><%= link_to "Show review's comment", movie_review_path(@movie,movie), class: 'btn btn-outline-primary' %></td>
       <% if can? :edit, movie %>
           <td class="table-info"><%= link_to "Edit review", edit_movie_review_path(@movie,movie), class: 'btn btn-outline-primary' %></td>
@@ -53,9 +109,10 @@
   <% end %>
 <table>
   <tr>
-    <th class="table-warning"> <%= link_to "Edit this movie", edit_movie_path(@movie), class: 'btn btn-outline-secondary' %></th>
-    <th class="table-info"><%= button_to "Destroy this movie", @movie, method: :delete, class: 'btn btn-outline-danger' %></th>
+    <% if can? :edit, @movie %>
+      <th class="table-warning"> <%= link_to "Edit this movie", edit_movie_path(@movie), class: 'btn btn-outline-secondary' %></th>
+      <th class="table-info"><%= button_to "Destroy this movie", @movie, method: :delete, class: 'btn btn-outline-danger' %></th>
+    <% end %>
     <th class="table-info"><%= link_to "Back to movies", movies_path, class: 'btn btn-outline-secondary' %></th>
   </tr>
 </table>
-

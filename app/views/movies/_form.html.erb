@@ -13,17 +13,17 @@
 
   <div>
     <%= form.label :name, style: "display: block" %>
-    <%= form.text_field :name %>
+    <%= form.text_field :name, required: true %>
   </div>
 
   <div>
     <%= form.label :released_at, style: "display: block" %>
-    <%= form.date_field :released_at %>
+    <%= form.date_field :released_at, required: true %>
   </div>
 
   <div>
     <%= form.label :avatar, style: "display: block" %>
-    <%= form.file_field :avatar %>
+    <%= form.file_field :avatar, required: true %>
   </div>
 
   <div>

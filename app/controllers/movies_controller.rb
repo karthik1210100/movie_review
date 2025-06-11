@@ -7,11 +7,10 @@ class MoviesController < ApplicationController
   def index
     # @movies = Movie.all
     if params.has_key?(:start_date)
-      @movies = Movie.order('average_rating DESC').movie_filter(params[:start_date],params[:end_date]).paginate(page: params[:page], per_page: 4)
+      @movies = Movie.order('average_rating DESC').movie_filter(params[:start_date],params[:end_date]).paginate(page: params[:page], per_page: 4).includes(avatar_attachment: :blob)
     else
-      @movies = Movie.order('average_rating DESC').paginate(page: params[:page], per_page: 4)
+      @movies = Movie.order('average_rating DESC').paginate(page: params[:page], per_page: 6).includes(avatar_attachment: :blob)
     end
-
   end
 
   # GET /movies/1 or /movies/1.json
@@ -35,7 +34,7 @@ class MoviesController < ApplicationController
 
     respond_to do |format|
       if @movie.save
-        format.html { redirect_to movie_url(@movie), notice: "Movie was successfully created." }
+        format.html { redirect_to movie_url(@movie), notice: "Movie created successfully." }
         format.json { render :show, status: :created, location: @movie }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -48,7 +47,7 @@ class MoviesController < ApplicationController
   def update
     respond_to do |format|
       if @movie.update(movie_params)
-        format.html { redirect_to movie_url(@movie), notice: "Movie was successfully updated." }
+        format.html { redirect_to movie_url(@movie), notice: "Movie updated successfully." }
         format.json { render :show, status: :ok, location: @movie }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -62,7 +61,7 @@ class MoviesController < ApplicationController
     @movie.destroy
 
     respond_to do |format|
-      format.html { redirect_to root_url, notice: "Movie was successfully destroyed." }
+      format.html { redirect_to root_url, notice: "Movie destroyed successfully." }
       format.json { head :no_content }
     end
   end
@@ -76,7 +75,7 @@ class MoviesController < ApplicationController
       respond_to do |format|
         format.html {
           redirect_to [@movie],
-                      notice: "Movie was successfully rated." }
+                      notice: "Rated successfully." }
         # format.js { flash[:notice] = "Movie was successfully rated." }
       end
     else
@@ -86,20 +85,21 @@ class MoviesController < ApplicationController
       respond_to do |format|
         format.html {
           redirect_to [@movie],
-                      notice: "Movie was successfully updated." }
+                      notice: "Rating updated." }
         # format.js { flash[:notice] = "Movie was successfully updated." }
       end
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_movie
-      @movie = Movie.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def movie_params
-      params.require(:movie).permit(:name, :released_at, :rating, :avatar)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_movie
+    @movie = Movie.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def movie_params
+    params.require(:movie).permit(:name, :released_at, :rating, :avatar)
+  end
 end
