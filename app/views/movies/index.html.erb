@@ -1,41 +1,43 @@
-<p style="color: green"><%= notice %></p>
+<p class="text-success text-center font-weight-bold mt-3"><%= notice %></p>
 
-<h2>Movies</h2>
+<div class="text-center my-4">
+  <h1 class="display-4 text-primary font-weight-bold">🎥 Explore Movies</h1>
+  <p class="lead text-muted">Browse and rate your favorite films</p>
+</div>
 
-<%= render 'scope' %>
+<%= render 'scope' %><br>
 
 <div class="container">
   <div class="row">
     <% @movies.each do |movie| %>
-      <div class="col-md-6">
-        <div class="card mb-6 box-shadow">
-          <div class="card-body">
-            <div class="row">
-              <div class="col">
-                <% if movie.avatar.present? %>
-                  <%= image_tag(movie.avatar, size: "200x200") %>
-                <% else %>
-                  <%= image_tag("https://via.placeholder.com/200?text=No image", size: "200x200" ) %>
-                <% end %>
-                <%= render movie %>
-                <%# if movie.average_rating %>
-<!--                  <strong>Average rating: </strong><%#= number_with_precision(movie.average_rating,precision: 2) %>-->
-                <%# end %>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="btn-group">
-                    <%= link_to "Show movie", movie, class: 'btn btn-outline-secondary' %>
+      <div class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex">
+        <div class="card movie-card shadow-sm w-100">
+          <% if movie.avatar.present? %>
+            <%= image_tag(movie.avatar, class: "card-img-top img-fluid movie-image") %>
+          <% else %>
+            <%= image_tag("https://via.placeholder.com/300x200?text=No+Image", class: "card-img-top movie-image") %>
+          <% end %>
+
+          <div class="card-body d-flex flex-column">
+            <%= render movie %>
+
+            <% if movie.average_rating %>
+              <div class="rating-section mt-3">
+                <strong>Average Rating:</strong>
+                <div class="progress rounded-pill" role="progressbar"
+                     aria-valuenow="<%= movie.average_rating.to_f.round(2) %>"
+                     aria-valuemin="0" aria-valuemax="5">
+                  <div class="progress-bar progress-bar-striped progress-bar-animated bg-info text-dark font-weight-bold"
+                       style="width: <%= movie.average_rating.to_f * 20 %>%;">
+                    <%= number_with_precision(movie.average_rating, precision: 2) %>/5
                   </div>
                 </div>
               </div>
-              <% if movie.average_rating %>
-              <div class="col d-flex align-items-center">
-                <strong>Average Rating</strong>
-                <div class="progress w-100" role="progressbar" aria-label="Animated striped example" aria-valuenow="<%= number_with_precision(movie.average_rating,precision: 2) %>" aria-valuemin="0" aria-valuemax="5">
-                  <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: <%= number_with_precision(movie.average_rating,precision: 2).to_f * 20 %>%"><%= number_with_precision(movie.average_rating,precision: 2) %></div>
-                </div>
-              </div>
+            <% end %>
+
+            <div class="mt-auto text-center mt-4"><br>
+              <%= link_to "🎬 Show Movie", movie, class: 'btn btn-outline-primary rounded-pill px-4' %>
             </div>
-                <% end %>
           </div>
         </div>
       </div>
@@ -43,16 +45,116 @@
   </div>
 </div>
 
-<div class="paginate">
-  <%= will_paginate @movies, :container => false, :previous_label => 'Previous', :next_label => 'Next', :class => 'pagination', :inner_window => '2', :outer_window => '2' %>
+<div class="d-flex justify-content-center my-4">
+  <%= will_paginate @movies,
+                    previous_label: '« Previous',
+                    next_label: 'Next »',
+                    class: 'pagination',
+                    inner_window: 2,
+                    outer_window: 1
+  %>
 </div>
 
+<div class="text-center my-5">
+  <%= link_to "➕ Add New Movie", new_movie_path, class: 'btn btn-success rounded-pill px-4 py-2' %>
 
-<%= link_to "New movie", new_movie_path, class: 'btn btn-outline-primary' %>
+  <% if params.has_key?(:start_date) %>
+    <%= link_to "⬅️ Back", :back, class: 'btn btn-secondary rounded-pill ml-2 px-4 py-2' %>
+  <% end %>
+</div>
 
-<% if params.has_key?(:start_date) %>
-<%= link_to "Back", :back , class: 'btn btn-outline-secondary' %>
-<% end %>
+<style>
+    .movie-card {
+        border-radius: 12px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
 
+    .movie-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
 
+    .movie-image {
+        height: 200px;
+        object-fit: cover;
+    }
 
+    .progress {
+        height: 20px;
+        margin-top: 5px;
+        background-color: #e9ecef;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        line-height: 20px;
+        font-size: 14px;
+        background-color: #007bff;
+        color: white;
+        font-weight: 500;
+    }
+
+    .btn-outline-primary {
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .btn-success {
+        box-shadow: 0 4px 14px rgba(0, 128, 0, 0.3);
+        font-size: 16px;
+    }
+
+    .pagination {
+        display: flex;
+        gap: 0.5rem;
+        list-style: none;
+        padding-left: 0;
+        justify-content: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .pagination li {
+        display: inline-block;
+    }
+
+    .pagination li a,
+    .pagination li span {
+        display: inline-block;
+        padding: 8px 16px;
+        border: 1px solid #007bff;
+        border-radius: 30px;
+        color: #007bff;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        user-select: none;
+    }
+
+    .pagination li.active span {
+        background-color: #007bff;
+        color: #fff;
+        border-color: #007bff;
+        cursor: default;
+    }
+
+    .pagination li.disabled span {
+        color: #ccc;
+        border-color: #ccc;
+        cursor: not-allowed;
+    }
+
+    .pagination li a:hover {
+        background-color: #0056b3;
+        color: white;
+        border-color: #0056b3;
+    }
+
+</style>

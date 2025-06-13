@@ -1,51 +1,200 @@
-<h2>Edit <%= resource_name.to_s.humanize %></h2>
+<% resource = current_user %>
+<% resource_name = :user %>
+<% devise_mapping = Devise.mappings[:user] %>
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+<div class="edit-profile-wrapper">
+  <div class="card shadow-lg p-5 mx-auto">
+    <h2 class="title-gradient mb-4 text-center">Edit <%= resource_name.to_s.humanize %></h2>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-  </div>
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put, class: 'edit-form' }) do |f| %>
+      <%= render "devise/shared/error_messages", resource: resource %>
 
-  <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
-    <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
-  <% end %>
+      <div class="form-group">
+        <%= f.label :email, class: 'form-label' %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "Your email", class: 'form-input' %>
+      </div>
 
-  <div class="field">
-    <%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
-    <% if @minimum_password_length %>
-      <br />
-      <em><%= @minimum_password_length %> characters minimum</em>
+      <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+        <div class="alert alert-warning small rounded">Waiting confirmation for: <%= resource.unconfirmed_email %></div>
+      <% end %>
+
+      <div class="form-group">
+        <%= f.label :password, class: 'form-label' %>
+        <small class="hint">(Leave blank if unchanged)</small>
+        <%= f.password_field :password, autocomplete: "new-password", placeholder: "New password", class: 'form-input' %>
+        <% if @minimum_password_length %>
+          <small class="password-info"><%= @minimum_password_length %> characters minimum</small>
+        <% end %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :password_confirmation, class: 'form-label' %>
+        <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "Confirm password", class: 'form-input' %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :current_password, class: 'form-label' %>
+        <small class="hint">(Required to confirm changes)</small>
+        <%= f.password_field :current_password, autocomplete: "current-password", placeholder: "Current password", class: 'form-input' %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :avatar, class: 'form-label' %>
+        <%= f.file_field :avatar, class: 'form-input file-input' %>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-gradient btn-lg w-100">Update Profile</button>
     <% end %>
+
+    <hr class="divider" />
+
+    <%= button_to "Cancel Account", registration_path(resource_name), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-danger btn-lg w-100" %>
+
+    <div class="text-center mt-4">
+      <%= link_to "← Back", :back, class: "back-link" %>
+    </div>
   </div>
+</div>
 
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
+<style>
+    .edit-profile-wrapper {
+        background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 15px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-  <div class="field">
-    <%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
-    <%= f.password_field :current_password, autocomplete: "current-password" %>
-  </div>
+    .card {
+        background: white;
+        border-radius: 16px;
+        max-width: 480px;
+        width: 100%;
+        padding: 40px;
+        box-shadow: 0 25px 40px rgba(0,0,0,0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
-  <div class="field">
-    <%= f.label :avatar, style: "display: block" %>
-    <%= f.file_field :avatar %>
-  </div>
+    .card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 40px 60px rgba(0,0,0,0.25);
+    }
 
-  <div class="actions">
-    <%= f.submit "Update" %>
-  </div>
-<% end %>
+    .title-gradient {
+        font-size: 2.3rem;
+        font-weight: 700;
+        background: linear-gradient(45deg, #1e90ff, #00bfff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1.5rem;
+    }
 
-<h3>Cancel my account</h3>
+    .form-group {
+        margin-bottom: 1.8rem;
+    }
 
-<p><%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete %></p>
+    .form-label {
+        font-weight: 600;
+        font-size: 1rem;
+        color: #333;
+        display: block;
+        margin-bottom: 6px;
+    }
 
-<%= link_to "Back", :back %>
+    .hint {
+        font-size: 0.85rem;
+        color: #666;
+        font-style: italic;
+        display: block;
+        margin-bottom: 6px;
+    }
 
+    .password-info {
+        font-size: 0.75rem;
+        color: #aaa;
+        margin-top: 4px;
+    }
 
-<!--<p><%#= button_to "Cancel my account", registration_path(resource_name), data: { "turbo-confirm": "Are you sure?" ,"turbo-method": 'delete'}, redirect_to:root_path  %></p>-->
+    .form-input {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 10px;
+        border: 2px solid #ddd;
+        font-size: 1rem;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-input:focus {
+        border-color: #1e90ff;
+        box-shadow: 0 0 8px rgba(30,144,255, 0.5);
+        outline: none;
+    }
+
+    .file-input {
+        padding: 6px 12px;
+    }
+
+    .btn-gradient {
+        background: linear-gradient(135deg, #1e90ff 0%, #00bfff 100%);
+        border: none;
+        font-weight: 700;
+        font-size: 1.2rem;
+        border-radius: 50px;
+        padding: 12px 0;
+        color: white;
+        cursor: pointer;
+        box-shadow: 0 8px 20px rgba(30,144,255, 0.4);
+        transition: background 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .btn-gradient:hover {
+        background: linear-gradient(135deg, #005bb5 0%, #0080ff 100%);
+        box-shadow: 0 12px 30px rgba(0,123,255,0.7);
+    }
+
+    .btn-danger {
+        border-radius: 50px;
+        padding: 12px 0;
+        font-weight: 700;
+        font-size: 1.2rem;
+        box-shadow: 0 8px 20px rgba(220, 53, 69, 0.4);
+        transition: background 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .btn-danger:hover {
+        background-color: #b02a37;
+        box-shadow: 0 12px 30px rgba(176, 42, 55, 0.7);
+    }
+
+    .divider {
+        border: none;
+        border-top: 2px solid #e0e0e0;
+        margin: 3rem 0;
+    }
+
+    .back-link {
+        font-weight: 600;
+        font-size: 1rem;
+        color: #1e90ff;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .back-link:hover {
+        color: #005bb5;
+        text-decoration: underline;
+    }
+
+    .alert {
+        padding: 10px 16px;
+        border-radius: 8px;
+        background-color: #fff3cd;
+        color: #856404;
+        font-size: 0.875rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #ffeeba;
+    }
+
+</style>

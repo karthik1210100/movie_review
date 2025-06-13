@@ -1,49 +1,74 @@
-<p style="color: green"><%= notice %></p>
+<div class="card mb-4 shadow-sm">
+  <div class="card-body">
+    <%= render @review %>
 
-<%= render @review %>
-<% if @review.user.present? %>
-<h4>Created by : <%= User.find(@review.user_id).email %></h4>
-<% else %>
-  <strong>Created by </strong>: User suspended
-  <% end %>
-<div>
-  <%= render 'user_review_comments/form', user_review_comment: @review.user_review_comments.build %>
-  <% if @review.user_review_comments.second != nil %>
-  <table class="table table-striped">
-    <thead>
-    <tr>
-      <th class="table-primary">Comments</th>
-<!--      <th class="table-primary" colspan="3" align="center" >Action</th>-->
-    </tr>
-    </thead>
-    <tbody>
-  <% @review.user_review_comments.includes(:user).each do |comment| %><br>
-      <tr>
-    <% if comment.comment %>
-          <td class="table-info"><%= comment.comment %><br>
-            <% if comment.user.present? %>
-            Created by : <%= comment.user.email %></td>
-              <% else %>
-            Created by : User suspended
-              <% end %>
-          <% if can? :edit, comment %>
-<!--            <td class="table-info"><%#= link_to "Show comment", movie_review_user_review_comment_path(@movie, @review, comment), class: 'btn btn-outline-secondary' %></td>-->
-            <td class="table-info"><a class="table-info"><%= link_to "Edit this comment", edit_movie_review_user_review_comment_path(@movie,@review,comment), class: 'btn btn-outline-secondary' %></a></td>
-            <td class="table-info"><a class="table-info"><%= button_to "Destroy this comment", movie_review_user_review_comment_path(@movie,@review,comment), class: 'btn btn-outline-secondary', method: :delete %></a></td>
-            <% else %>
-<!--            <td class="table-info"><%#= link_to "Show comment", movie_review_user_review_comment_path(@movie, @review, comment), class: 'btn btn-outline-secondary' %></td>-->
+    <hr>
 
+    <h5 class="text-secondary">
+      Created by:
+      <% if @review.user.present? %>
+        <span class="fw-semibold"><%= @review.user.email %></span>
+      <% else %>
+        <span class="text-muted fst-italic">User suspended</span>
       <% end %>
-          </tr>
-  <% end %>
-    <% end %>
-    </tbody>
-  </table>
-    <% end %>
+    </h5>
+  </div>
 </div>
 
-<div>
-  <a class="table-info"><%= link_to "Back to movie", movie_path(@movie), class: 'btn btn-outline-secondary' %></a>
+<%# New Comment Form %>
+<div class="card shadow-sm mb-5">
+  <div class="card-body">
+    <h4 class="text-success fw-bold mb-3">📝 Add a Comment</h4>
+    <%= render 'user_review_comments/form', user_review_comment: @review.user_review_comments.build %>
+  </div>
+</div>
 
+<%# Comments Table %>
+<% if @review.user_review_comments.size > 1 %>
+  <div class="card shadow-sm mb-5">
+    <div class="card-header bg-primary text-white fw-semibold">
+      Comments
+    </div>
+    <div class="table-responsive">
+      <table class="table table-striped align-middle mb-0">
+        <thead class="table-light">
+        <tr>
+          <th>Comment</th>
+          <th class="text-center" style="width: 200px;">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <% @review.user_review_comments.includes(:user).each do |comment| %>
+          <% next unless comment.comment.present? %>
+          <tr>
+            <td>
+              <p class="mb-1"><%= comment.comment %></p>
+              <small class="text-muted fst-italic">
+                Created by:
+                <% if comment.user.present? %>
+                  <%= comment.user.email %>
+                <% else %>
+                  User suspended
+                <% end %>
+              </small>
+            </td>
+            <td class="text-center">
+              <% if can? :edit, comment %>
+                <%= link_to "✏️ Edit", edit_movie_review_user_review_comment_path(@movie, @review, comment), class: "btn btn-outline-secondary btn-sm me-2" %>
+                <%= button_to "🗑️ Delete", movie_review_user_review_comment_path(@movie, @review, comment), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-outline-danger btn-sm" %>
+              <% else %>
+                <span class="text-muted fst-italic">No actions available</span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% end %>
 
+<%# Back Link %>
+<div class="mb-5 text-center">
+  <%= link_to "← Back to Movie", movie_path(@movie), class: "btn btn-outline-secondary px-4 rounded-pill" %>
 </div>

@@ -1,26 +1,147 @@
-<h4>Log in</h4>
+<h4 class="login-title">Welcome Back</h4>
 
-<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+<%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "login-form" }) do |f| %>
   <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+    <%= f.label :email, class: "form-label" %>
+    <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-input" %>
   </div>
 
   <div class="field">
-    <%= f.label :password %><br />
-    <%= f.password_field :password, autocomplete: "current-password" %>
+    <%= f.label :password, class: "form-label" %>
+    <%= f.password_field :password, autocomplete: "current-password", class: "form-input" %>
   </div>
 
   <% if devise_mapping.rememberable? %>
-    <div class="field">
-      <%= f.check_box :remember_me %>
-      <%= f.label :remember_me %>
+    <div class="field remember-me">
+      <%= f.check_box :remember_me, class: "form-checkbox" %>
+      <%= f.label :remember_me, class: "form-label-inline" %>
     </div>
   <% end %>
 
   <div class="actions">
-    <%= f.submit "Log in" %>
+    <%= f.submit "Log in", class: "submit-btn" %>
   </div>
 <% end %>
 
-<%= render "devise/shared/links" %>
+<div class="devise-links">
+  <%= render "devise/shared/links" %>
+</div>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    .login-title {
+        text-align: center;
+        font-size: 30px;
+        font-weight: 700;
+        color: #ffffff;
+        margin-top: 40px;
+    }
+
+    .login-form {
+        max-width: 400px;
+        margin: 40px auto;
+        padding: 30px 40px;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        animation: slideIn 0.5s ease-out;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateY(30px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .form-label {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 15px;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .form-input:focus {
+        border-color: #2575fc;
+        box-shadow: 0 0 5px rgba(37, 117, 252, 0.4);
+        outline: none;
+    }
+
+    .remember-me {
+        display: flex;
+        align-items: center;
+        margin-top: 16px;
+    }
+
+    .form-checkbox {
+        margin-right: 10px;
+    }
+
+    .form-label-inline {
+        font-size: 14px;
+        color: #555;
+    }
+
+    .actions {
+        text-align: center;
+        margin-top: 25px;
+    }
+
+    .submit-btn {
+        background: linear-gradient(90deg, #2575fc 0%, #6a11cb 100%);
+        color: #fff;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 25px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.2s;
+    }
+
+    .submit-btn:hover {
+        background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+        transform: translateY(-2px);
+    }
+
+    .devise-links {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .devise-links a {
+        color: #ffffff;
+        text-decoration: underline;
+        font-size: 14px;
+    }
+
+    @media (max-width: 480px) {
+        .login-form {
+            margin: 20px;
+            padding: 20px;
+        }
+
+        .submit-btn {
+            width: 100%;
+        }
+    }
+
+</style>

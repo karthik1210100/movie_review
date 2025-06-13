@@ -5,7 +5,6 @@ class MoviesController < ApplicationController
 
   # GET /movies or /movies.json
   def index
-    # @movies = Movie.all
     if params.has_key?(:start_date)
       @movies = Movie.order('average_rating DESC').movie_filter(params[:start_date],params[:end_date]).paginate(page: params[:page], per_page: 4).includes(avatar_attachment: :blob)
     else

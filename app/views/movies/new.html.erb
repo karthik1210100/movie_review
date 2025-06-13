@@ -1,9 +1,42 @@
-<h1>New movie</h1>
+<div class="container py-5">
+  <div class="card shadow-lg p-5 mx-auto" style="max-width: 700px;">
 
-<%= render "form", movie: @movie %>
+    <%= render "form", movie: @movie %>
 
-<br>
-
-<div>
-  <%= link_to "Back to movies", movies_path, class: 'btn btn-outline-primary' %>
+    <div class="text-center mt-4">
+      <%= link_to "← Back to Movies", movies_path, class: 'btn btn-outline-primary btn-lg rounded-pill px-4' %>
+    </div>
+  </div>
 </div>
+
+<style>
+    .text-gradient {
+        font-weight: 700;
+        font-size: 2.5rem;
+        background: linear-gradient(90deg, #0d6efd, #6610f2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .card {
+        border-radius: 16px;
+        background: #ffffff;
+        transition: box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-outline-primary {
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
+
+</style>
