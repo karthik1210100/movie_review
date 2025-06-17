@@ -8,7 +8,7 @@ class MoviesController < ApplicationController
     if params.has_key?(:start_date)
       @movies = Movie.order('average_rating DESC').movie_filter(params[:start_date],params[:end_date]).paginate(page: params[:page], per_page: 4).includes(avatar_attachment: :blob)
     else
-      @movies = Movie.order('average_rating DESC').paginate(page: params[:page], per_page: 6).includes(avatar_attachment: :blob)
+      @movies = Movie.order('average_rating DESC').paginate(page: params[:page], per_page: 9).includes(avatar_attachment: :blob)
     end
   end
 
@@ -99,6 +99,6 @@ class MoviesController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def movie_params
-    params.require(:movie).permit(:name, :released_at, :rating, :avatar)
+    params.require(:movie).permit(:name, :released_at, :rating, :avatar, :trailer_url)
   end
 end

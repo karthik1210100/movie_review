@@ -11,6 +11,43 @@
     <div class="text-center">
       <%= render @movie %>
     </div>
+
+    <!-- Trailer video content -->
+    <% if @movie.trailer_url.present? %>
+      <%
+        require 'uri'
+        require 'cgi'
+
+        begin
+          uri = URI.parse(@movie.trailer_url)
+          video_id = nil
+
+          if uri.host&.include?("youtu.be")
+            video_id = uri.path.delete_prefix("/")
+          elsif uri.host&.include?("youtube.com") && uri.query.present?
+            params = CGI.parse(uri.query)
+            video_id = params["v"]&.first
+          end
+        rescue
+          video_id = nil
+        end
+      %>
+
+      <% if video_id.present? %>
+        <div class="d-flex justify-content-center mt-4">
+          <iframe
+            width="560"
+            height="315"
+            src="https://www.youtube.com/embed/<%= video_id %>?autoplay=1&rel=0"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen>
+          </iframe>
+        </div>
+      <% else %>
+        <div class="text-danger text-center">⚠️ Invalid trailer URL format.</div>
+      <% end %>
+    <% end %>
   </div>
 
   <!-- Rating Form Card -->
@@ -31,7 +68,7 @@
 
   <!-- Rating Breakdown Grid -->
   <div class="mb-5">
-    <h5 class="text-info fw-semibold mb-4 text-center">📊 Rating Breakdown</h5>
+    <h5 class="text-secondary fw-semibold mb-4 text-center">📊 Rating Breakdown</h5>
     <div class="d-flex justify-content-center gap-4 flex-wrap">
       <% 5.downto(1) do |j| %>
         <div class="text-center p-3 shadow-sm rounded-3 bg-white" style="min-width: 100px;">
@@ -50,17 +87,17 @@
 
   <!-- Review Form Section -->
   <div class="card shadow-sm rounded-4 border-0 p-4 mb-5" style="background: #fefefe;">
-    <h4 class="text-success fw-semibold mb-4">📝 Add a Review</h4>
+    <h4 class="text-secondary fw-semibold mb-4">📝 Add a Review</h4>
     <%= render 'reviews/form', review: @movie.reviews.build %>
   </div>
 
   <!-- Reviews Table with card styling -->
-  <% if @movie.reviews.any? %>
+  <% if @movie.reviews.select(&:persisted?).any? %>
     <div class="card rounded-4 shadow-sm p-4 mb-5 bg-white border-0">
       <h5 class="mb-4 text-secondary text-center">💬 User Reviews</h5>
       <div class="table-responsive">
         <table class="table align-middle">
-          <thead class="table-light text-uppercase small">
+          <thead class="card-header bg-primary text-white fw-semibold">
           <tr>
             <th>Review</th>
             <th class="text-center" colspan="3">Actions</th>
@@ -73,7 +110,8 @@
               <td>
                 <p class="mb-1 fw-semibold"><%= review.about %></p>
                 <small class="text-muted">
-                  By: <%= review.user&.email || 'User Suspended' %> &bull; Comments: <%= review.user_review_comments.count %>
+                  By: <%= review.user&.email || 'User Suspended' %> &bull;
+                  Comments: <%= review.user_review_comments.count %>
                 </small>
               </td>
               <td class="text-center">
@@ -128,7 +166,6 @@
             star.addEventListener("click", function () {
                 const value = parseInt(this.getAttribute("data-value"));
 
-                // If clicked value is already selected, deselect it
                 if (selectedRating === value) {
                     selectedRating = 0;
                     ratingInput.value = "";
@@ -165,6 +202,7 @@
         background: #fff;
         transition: box-shadow 0.3s ease;
     }
+
     .card:hover {
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
     }
