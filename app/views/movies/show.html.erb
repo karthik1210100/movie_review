@@ -14,39 +14,18 @@
 
     <!-- Trailer video content -->
     <% if @movie.trailer_url.present? %>
-      <%
-        require 'uri'
-        require 'cgi'
-
-        begin
-          uri = URI.parse(@movie.trailer_url)
-          video_id = nil
-
-          if uri.host&.include?("youtu.be")
-            video_id = uri.path.delete_prefix("/")
-          elsif uri.host&.include?("youtube.com") && uri.query.present?
-            params = CGI.parse(uri.query)
-            video_id = params["v"]&.first
-          end
-        rescue
-          video_id = nil
-        end
-      %>
-
-      <% if video_id.present? %>
-        <div class="d-flex justify-content-center mt-4">
-          <iframe
-            width="560"
-            height="315"
-            src="https://www.youtube.com/embed/<%= video_id %>?autoplay=1&rel=0"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen>
-          </iframe>
-        </div>
-      <% else %>
-        <div class="text-danger text-center">⚠️ Invalid trailer URL format.</div>
-      <% end %>
+      <div class="d-flex justify-content-center mt-4">
+        <iframe
+          width="560"
+          height="315"
+          src="<%= @movie.trailer_url %>"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+    <% else %>
+      <div class="text-danger text-center">⚠️ Invalid trailer URL format.</div>
     <% end %>
   </div>
 
