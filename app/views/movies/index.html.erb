@@ -1,8 +1,10 @@
 <p class="text-success text-center font-weight-bold mt-3"><%= notice %></p>
 
-<div class="text-center my-4">
-  <h1 class="display-4 text-primary font-weight-bold">🎥 Explore Movies</h1>
-  <p class="lead text-muted">Browse and rate your favorite films</p>
+<div class="d-flex justify-content-between align-items-center my-4">
+  <div>
+    <h1 class="display-4 text-primary font-weight-bold mb-0">🎥 Explore Movies</h1>
+  </div>
+  <%= link_to "➕ Add New Movie", new_movie_path, class: 'btn btn-success rounded-pill px-4 py-2' %>
 </div>
 
 <%= render 'scope' %><br>
@@ -53,14 +55,6 @@
                     inner_window: 2,
                     outer_window: 1
   %>
-</div>
-
-<div class="text-center my-5">
-  <%= link_to "➕ Add New Movie", new_movie_path, class: 'btn btn-success rounded-pill px-4 py-2' %>
-
-  <% if params.has_key?(:start_date) %>
-    <%= link_to "⬅️ Back", :back, class: 'btn btn-secondary rounded-pill ml-2 px-4 py-2' %>
-  <% end %>
 </div>
 
 <style>
