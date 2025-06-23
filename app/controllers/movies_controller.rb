@@ -5,13 +5,16 @@ class MoviesController < ApplicationController
 
   # GET /movies or /movies.json
   def index
-    if params.has_key?(:start_date)
-      @movies = Movie.order('average_rating DESC').movie_filter(params[:start_date],params[:end_date]).paginate(page: params[:page], per_page: 4).includes(avatar_attachment: :blob)
-    else
-      @movies = Movie.order('average_rating DESC').paginate(page: params[:page], per_page: 9).includes(avatar_attachment: :blob)
+    @movies = Movie.order('average_rating DESC')
+
+    if params[:start_date].present? && params[:end_date].present?
+      @movies = @movies.movie_filter(params[:start_date], params[:end_date])
     end
 
     @movies = @movies.name_search(params[:q]) if params[:q].present?
+
+    @movies = @movies.includes(avatar_attachment: :blob)
+                     .paginate(page: params[:page], per_page: 9)
   end
 
   # GET /movies/1 or /movies/1.json

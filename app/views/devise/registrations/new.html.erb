@@ -6,10 +6,10 @@
 
       <%= render "devise/shared/error_messages", resource: resource %>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-  </div>
+      <div class="field mb-3">
+        <%= f.label :email, class: "form-label" %>
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control", placeholder: "Enter your email", required: true %>
+      </div>
 
       <div class="mb-3">
         <%= f.label :password, class: "form-label" %>

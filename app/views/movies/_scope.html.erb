@@ -1,22 +1,27 @@
-<div class="container mb-4">
-  <div class="row justify-content-between align-items-center">
-    <div class="col-md-6" style="flex: 0 0 43.5%;">
-      <%= form_with url: movies_path, method: :get, local: true do %>
-        <div class="input-group">
-          <%= text_field_tag :q, params[:q], class: "form-control", placeholder: "🔍 Search movies by name..." %>
-          <button class="btn btn-outline-primary" type="submit">Search</button>
+<div class="container my-4">
+  <div class="card p-3 shadow-sm">
+    <%= form_with url: movies_path, method: :get do |form| %>
+      <div class="row g-2 align-items-end">
+        <div class="col-md-4">
+          <%= label_tag :q, "Search Movie", class: "form-label" %>
+          <%= text_field_tag :q, params[:q], class: "form-control", placeholder: "search movie name" %>
         </div>
-      <% end %>
-    </div>
+
+        <div class="col-md-3">
+          <%= form.label :start_date, "Start Date", class: "form-label" %>
+          <%= form.date_field :start_date, class: "form-control", value: params[:start_date] %>
+        </div>
+
+        <div class="col-md-3">
+          <%= form.label :end_date, "End Date", class: "form-label" %>
+          <%= form.date_field :end_date, class: "form-control", value: params[:end_date] %>
+        </div>
+
+        <div class="col-md-2 d-grid">
+          <%= form.submit "Filter", class: "btn btn-primary" %>
+          <%= link_to "Reset", movies_path, class: "btn btn-outline-secondary" %>
+        </div>
+      </div>
+    <% end %>
   </div>
 </div>
-
-<%= form_with method: :get, class: 'form-inline' do |form| %>
-  <div class="form-group">
-    <%= form.date_field :start_date, class: 'form-control', required: true, placeholder: "search" %>
-  </div>
-  <div class="form-group ml-3">
-    <%= form.date_field :end_date, class: 'form-control', required: true %>
-  </div>
-  <%= form.submit "Show detail", class: "btn btn-outline-primary" %>
-<% end %>
