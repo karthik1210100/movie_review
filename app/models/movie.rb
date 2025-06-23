@@ -6,6 +6,7 @@ class Movie < ApplicationRecord
 
   validates :name, presence: true, uniqueness: true
 
+  scope :name_search, ->(query) { where("LOWER(name) LIKE ?", "%#{query.downcase}%") if query.present? }
   scope :movie_filter, ->(start_date = Date.yesterday, end_date = Date.today){where("released_at between ? and ?",start_date,end_date)}
 
   before_save :normalize_trailer_url

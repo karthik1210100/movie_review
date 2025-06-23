@@ -10,6 +10,8 @@ class MoviesController < ApplicationController
     else
       @movies = Movie.order('average_rating DESC').paginate(page: params[:page], per_page: 9).includes(avatar_attachment: :blob)
     end
+
+    @movies = @movies.name_search(params[:q]) if params[:q].present?
   end
 
   # GET /movies/1 or /movies/1.json
