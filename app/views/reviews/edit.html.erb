@@ -1,10 +1,13 @@
-<h1>Editing review</h1>
+<div class="container py-5" style="max-width: 700px;">
 
-<%= render "form", review: @review %>
+  <div class="card shadow-sm border-0 rounded-4 p-4 mb-4">
+    <h2 class="mb-4 text-primary fw-bold text-center">✏️ Edit Review</h2>
 
-<br>
-<%= link_to "Back to movie", movie_review_path(@movie), class: 'btn btn-outline-secondary' %>
-<!--<div>-->
-<!--  <%#= link_to "Show this review", @review %> |-->
-  <%#= link_to "Back to reviews", reviews_path %>
-<!--</div>-->
+    <%= render "form", review: @review %>
+  </div>
+
+  <div class="text-center">
+    <%= link_to "← Back to Movie", movie_path(@movie), class: "btn btn-outline-secondary px-4 rounded-pill" %>
+  </div>
+
+</div>

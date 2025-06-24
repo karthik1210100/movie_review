@@ -28,7 +28,7 @@ class UserReviewCommentsController < ApplicationController
     # @user_review_comment = UserReviewComment.where(review_id: @user_review_comment.id, user_id: current_user.id)
       respond_to do |format|
       if @user_review_comment.save
-        format.html { redirect_to [@movie, @review], notice: "User review comment was successfully created." }
+        format.html { redirect_to [@movie, @review], notice: "Review's comment created." }
         format.json { render :show, status: :created, location: @user_review_comment }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -41,7 +41,7 @@ class UserReviewCommentsController < ApplicationController
   def update
     respond_to do |format|
       if @user_review_comment.update(user_review_comment_params)
-        format.html { redirect_to user_review_comment_url(@user_review_comment), notice: "User review comment was successfully updated." }
+        format.html { redirect_to [@movie,@review], notice: "Review's comment updated." }
         format.json { render :show, status: :ok, location: @user_review_comment }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -55,7 +55,7 @@ class UserReviewCommentsController < ApplicationController
     @user_review_comment.destroy
 
     respond_to do |format|
-      format.html { redirect_to [@movie, @review], notice: "User review comment was successfully destroyed." }
+      format.html { redirect_to [@movie, @review], notice: "Review's comment destroyed." }
       format.json { head :no_content }
     end
   end

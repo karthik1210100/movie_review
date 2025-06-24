@@ -13,15 +13,14 @@
 
   <div>
     <%= form.label :about, style: "display: block" %>
-    <%= form.text_field :about %>
+    <%= form.text_field :about, required: true  %>
   </div>
 
-<!--  <div>-->
-    <%#= form.label :movie_id, style: "display: block" %>
-    <%#= form.text_field :movie_id %>
-<!--  </div>-->
-
   <div>
-    <%= form.submit "Create Review" %>
+    <% if controller.action_name == 'edit' %>
+      <%= form.submit "Edit Review" %>
+    <% else %>
+      <%= form.submit "Create Review" %>
+    <% end %>
   </div>
 <% end %>

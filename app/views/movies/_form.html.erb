@@ -1,8 +1,7 @@
-<%= form_with(model: movie) do |form| %>
+<%= form_with(model: movie, html: { class: "movie-form card shadow p-4 mx-auto", style: "max-width: 600px;" }) do |form| %>
   <% if movie.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(movie.errors.count, "error") %> prohibited this movie from being saved:</h2>
-
+    <div class="alert alert-danger">
+      <h4><%= pluralize(movie.errors.count, "error") %> prevented this movie from being saved:</h4>
       <ul>
         <% movie.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -11,22 +10,81 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :name, style: "display: block" %>
-    <%= form.text_field :name %>
+  <h2 class="text-center text-primary mb-4">
+    <%= movie.new_record? ? "🎬 Add New Movie" : "✏️ Edit Movie" %>
+  </h2>
+
+  <div class="form-group mb-3">
+    <%= form.label :name, class: "form-label fw-semibold" %>
+    <%= form.text_field :name, required: true, placeholder: "Enter movie name", class: "form-control" %>
   </div>
 
-  <div>
-    <%= form.label :released_at, style: "display: block" %>
-    <%= form.date_field :released_at %>
+  <div class="form-group mb-3">
+    <%= form.label :released_at, class: "form-label fw-semibold" %>
+    <%= form.date_field :released_at, required: true, class: "form-control" %>
   </div>
 
-  <div>
-    <%= form.label :avatar, style: "display: block" %>
-    <%= form.file_field :avatar %>
+  <div class="form-group mb-4">
+    <%= form.label :avatar, class: "form-label fw-semibold" %>
+
+    <% if movie.avatar.attached? %>
+      <div class="mb-2">
+        <%= image_tag(movie.avatar.variant(resize_to_limit: [150, 150]), class: "rounded shadow-sm") %>
+        <p class="text-muted small">Current image</p>
+      </div>
+    <% end %>
+
+    <%= form.file_field :avatar, class: "form-control-file", required: movie.new_record? %>
   </div>
 
-  <div>
-    <%= form.submit %>
+  <div class="form-group">
+    <%= form.label :tag_list, "Tags" %>
+    <%= form.text_field :tag_list, value: @movie.tag_list.join(", "), placeholder: "e.g. Action, Drama", class: "form-control" %>
+  </div>
+
+  <div class="form-group mb-3">
+    <%= form.label :trailer_url, "Trailer Link", class: "form-label fw-semibold" %>
+    <%= form.url_field :trailer_url, placeholder: "https://www.youtube.com/watch?v=...", class: "form-control" %>
+  </div>
+
+  <div class="text-center">
+    <%= form.submit movie.new_record? ? "Create Movie" : "Update Movie", class: "btn btn-primary btn-lg rounded-pill px-5 fw-semibold" %>
   </div>
 <% end %>
+
+<style>
+    .movie-form {
+        background: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .movie-form:hover {
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .movie-form h2 {
+        font-weight: 700;
+        background: linear-gradient(90deg, #0d6efd, #6610f2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        border: none;
+        transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #0056b3, #004494);
+        transform: scale(1.03);
+    }
+
+</style>

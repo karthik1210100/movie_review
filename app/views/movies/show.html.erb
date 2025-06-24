@@ -1,61 +1,231 @@
-<p style="color: green"><%= notice %></p>
-<%= image_tag(@movie.avatar, size: "200x200") %>
+<div class="container py-5">
 
-<%= render @movie %>
+  <div class="card border-0 shadow-lg mb-5 p-4">
+    <div class="text-center mb-4">
+      <% if @movie.avatar.present? %>
+        <%= image_tag(@movie.avatar, size: "250x250", class: "rounded-circle shadow-sm") %>
+      <% else %>
+        <%= image_tag("https://via.placeholder.com/250?text=No+Image", class: "rounded-circle shadow-sm") %>
+      <% end %>
+    </div>
+    <div class="text-center">
+      <%= render @movie %>
+    </div>
 
-<%#= form_with(url: movie_rating_movie_path(@movie), method: :post) do |f| %>
-    <%# MovieRating::RATINGS.each do |rating, rate| %>
-      <%#= f.radio_button "movie[rating]", rate  %> <%#= rating %>
-    <%# end %>
-    <%#= f.submit %>
-  <%# end %>
-<!--<div>-->
-
-<strong>Rate the movie</strong>
-<%= form_with(url: movie_rating_movie_path(@movie), method: :post, class: "form-check") do |f| %>
-  <div class="form-check-inline">
-    <% MovieRating::RATINGS.each do |rating, rate| %>
-      <div class="form-check">
-        <%= f.radio_button "movie[rating]", rate, class: "form-check-input" %>
-        <label class="form-check-label"><%= rating %></label>
+    <!-- Trailer video content -->
+    <% if @movie.trailer_url.present? %>
+      <div class="d-flex justify-content-center mt-4">
+        <iframe
+          width="560"
+          height="315"
+          src="<%= @movie.trailer_url %>"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
       </div>
     <% end %>
   </div>
-  <%= f.submit "Rate", class: "btn btn-primary" %>
-<% end %>
+
+  <!-- Rating Form Card -->
+  <div class="card mb-5 shadow-sm border-0 rounded-4" style="background: linear-gradient(135deg, #f8f9fa, #e9ecef);">
+    <div class="card-body text-center">
+      <h4 class="text-primary fw-semibold mb-4">⭐ Rate This Movie</h4>
+      <%= form_with(url: movie_rating_movie_path(@movie), method: :post, html: { id: "rating-form" }) do |f| %>
+        <div class="star-rating d-flex justify-content-center gap-3 mb-4" id="star-container">
+          <% 1.upto(5) do |i| %>
+            <i class="bi bi-star fs-1" data-value="<%= i %>" style="cursor: pointer; color: #adb5bd;"></i>
+          <% end %>
+        </div>
+        <%= hidden_field_tag "movie[rating]", "", id: "rating-value" %>
+        <%= f.submit "Submit Rating", class: "btn btn-lg btn-primary rounded-pill px-5" %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Rating Breakdown Grid -->
+  <div class="mb-5">
+    <h5 class="text-secondary fw-semibold mb-4 text-center">📊 Rating Breakdown</h5>
+    <div class="d-flex justify-content-center gap-4 flex-wrap">
+      <% 5.downto(1) do |j| %>
+        <div class="text-center p-3 shadow-sm rounded-3 bg-white" style="min-width: 100px;">
+          <div>
+            <% j.times do %>
+              <span class="text-warning fs-4">&#9733;</span>
+            <% end %>
+          </div>
+
+          <div class="small text-muted mt-2">
+            <a href="#" data-toggle="collapse" data-target="#rating-<%= j %>" class="text-decoration-none">
+              <%= pluralize(@movie.movie_ratings.group(:rating).count[j] || 0, "vote") %>
+            </a>
+          </div>
+
+          <div class="collapse mt-2" id="rating-<%= j %>">
+            <div class="d-grid gap-2">
+              <% @movie.movie_ratings.select { |r| r.rating == j }.each do |r| %>
+                <% if r.user.present? %>
+                  <div class="badge bg-secondary"><%= r.user&.email || "Unknown User" %></div>
+            <% end %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Review Form Section -->
+  <div class="card shadow-sm rounded-4 border-0 p-4 mb-5" style="background: #fefefe;">
+    <h4 class="text-secondary fw-semibold mb-4">📝 Add a Review</h4>
+    <%= render 'reviews/form', review: @movie.reviews.build %>
+  </div>
+
+  <!-- Reviews Table with card styling -->
+  <% if @movie.reviews.select(&:persisted?).any? %>
+    <div class="card rounded-4 shadow-sm p-4 mb-5 bg-white border-0">
+      <h5 class="mb-4 text-secondary text-center">💬 User Reviews</h5>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead class="card-header bg-primary text-white fw-semibold">
+          <tr>
+            <th>Review</th>
+            <th class="text-center" colspan="3">Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <% @movie.reviews.includes(:user).each do |review| %>
+            <% next unless review.about %>
+            <tr>
+              <td>
+                <p class="mb-1 fw-semibold"><%= review.about %></p>
+                <small class="text-muted">
+                  By: <%= review.user&.email || 'User Suspended' %> &bull;
+                  Comments: <%= review.user_review_comments.count %>
+                </small>
+              </td>
+              <td class="text-center">
+                <%= link_to "💬 Comments", movie_review_path(@movie, review), class: 'btn btn-outline-info btn-sm px-3' %>
+              </td>
+              <% if can? :edit, review %>
+                <td class="text-center">
+                  <%= link_to "✏️ Edit", edit_movie_review_path(@movie, review), class: 'btn btn-outline-warning btn-sm px-3' %>
+                </td>
+                <td class="text-center">
+                  <%= button_to "🗑️ Delete", movie_review_path(@movie, review), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-outline-danger btn-sm px-3' %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Action Buttons -->
+  <div class="d-flex justify-content-center gap-3 mb-5">
+    <% if can? :edit, @movie %>
+      <%= link_to "✏️ Edit Movie", edit_movie_path(@movie), class: 'btn btn-outline-primary px-4 rounded-pill' %>
+      <%= button_to "🗑️ Delete Movie", @movie, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-outline-danger px-4 rounded-pill' %>
+    <% end %>
+    <%= link_to "⬅️ Back to Movies", movies_path, class: 'btn btn-outline-secondary px-4 rounded-pill' %>
+  </div>
+
 </div>
 
-<h4>Review</h4>
-<%= render 'reviews/form', review:@movie.reviews.build %>
-<% if @movie.reviews.second != nil %>
-<table class="table table-striped">
-  <thead>
-<tr>
-  <th class="table-primary">About</th>
-  <th class="table-primary text-center" colspan="3" >Action</th>
-</tr>
-  </thead>
-  <tbody>
-    <% @movie.reviews.each do |movie| %>
-    <tr>
-      <% if movie.about %>
-        <td class="table-info"><%= movie.about %></td>
-        <td class="table-info"><%= link_to "Show review's comment", movie_review_path(@movie,movie), class: 'btn btn-outline-primary' %></td>
-      <% if can? :edit, movie %>
-          <td class="table-info"><%= link_to "Edit review", edit_movie_review_path(@movie,movie), class: 'btn btn-outline-primary' %></td>
-          <td class="table-info"><%= button_to "Destroy review", movie_review_path(@movie,movie), class: 'btn btn-outline-primary', method: :delete %></td>
-        <% end %>
-  <% end %>
-    </tr>
-  <% end %>
-  </tbody>
-</table>
-  <% end %>
-<table>
-  <tr>
-    <th class="table-warning"> <%= link_to "Edit this movie", edit_movie_path(@movie), class: 'btn btn-outline-secondary' %></th>
-    <th class="table-info"><%= button_to "Destroy this movie", @movie, method: :delete, class: 'btn btn-outline-danger' %></th>
-    <th class="table-info"><%= link_to "Back to movies", movies_path, class: 'btn btn-outline-secondary' %></th>
-  </tr>
-</table>
+<script>
+    document.addEventListener("turbo:load", function () {
+        const toggleLinks = document.querySelectorAll(".toggle-user-list");
+        toggleLinks.forEach(function (link) {
+            link.addEventListener("click", function (event) {
+                event.preventDefault();
+                const rating = this.getAttribute("data-rating");
+                const list = document.getElementById("user-list-" + rating);
+                if (list) {
+                    list.classList.toggle("d-none");
+                }
+            });
+        });
 
+        const stars = document.querySelectorAll("#star-container i");
+        const ratingInput = document.getElementById("rating-value");
+        let selectedRating = 0;
+
+        stars.forEach(star => {
+            star.addEventListener("mouseover", function () {
+                const value = parseInt(this.getAttribute("data-value"));
+                highlightStars(value);
+            });
+
+            star.addEventListener("mouseout", function () {
+                highlightStars(selectedRating);
+            });
+
+            star.addEventListener("click", function () {
+                const value = parseInt(this.getAttribute("data-value"));
+                if (selectedRating === value) {
+                    selectedRating = 0;
+                    ratingInput.value = "";
+                } else {
+                    selectedRating = value;
+                    ratingInput.value = value;
+                }
+                highlightStars(selectedRating);
+            });
+        });
+
+        function highlightStars(count) {
+            stars.forEach(star => {
+                const starValue = parseInt(star.getAttribute("data-value"));
+                if (starValue <= count) {
+                    star.classList.remove("bi-star");
+                    star.classList.add("bi-star-fill");
+                    star.style.color = "#ffc107";
+                } else {
+                    star.classList.remove("bi-star-fill");
+                    star.classList.add("bi-star");
+                    star.style.color = "#ccc";
+                }
+            });
+        }
+    });
+</script>
+
+<style>
+    .card {
+        border-radius: 12px;
+        background: #fff;
+        transition: box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .star-rating {
+        font-size: 24px;
+        color: #ffc107;
+    }
+
+    .star-rating i:hover,
+    .star-rating i.active {
+        color: #ffc107 !important;
+        transition: color 0.2s ease-in-out;
+    }
+
+    .rounded-circle {
+        border: 3px solid #dee2e6;
+    }
+
+    .table th,
+    .table td {
+        vertical-align: middle !important;
+    }
+
+    .star-rating i {
+        transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+        margin-right: 5px;
+    }
+
+</style>
