@@ -35,7 +35,7 @@
       <div class="form-group">
         <%= f.label :current_password, class: 'form-label' %>
         <small class="hint">(Required to confirm changes)</small>
-        <%= f.password_field :current_password, autocomplete: "current-password", placeholder: "Current password", class: 'form-input' %>
+        <%= f.password_field :current_password, autocomplete: "current-password", placeholder: "Current password", class: 'form-input', required: true %>
       </div>
 
       <div class="form-group">

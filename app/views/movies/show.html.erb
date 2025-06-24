@@ -54,8 +54,21 @@
               <span class="text-warning fs-4">&#9733;</span>
             <% end %>
           </div>
+
           <div class="small text-muted mt-2">
-            <%= Movie.find(@movie.id).movie_ratings.group(:rating).count[j] || 0 %> votes
+            <a href="#" data-toggle="collapse" data-target="#rating-<%= j %>" class="text-decoration-none">
+              <%= pluralize(Movie.find(@movie.id).movie_ratings.group(:rating).count[j] || 0, "vote") %>
+            </a>
+          </div>
+
+          <div class="collapse mt-2" id="rating-<%= j %>">
+            <div class="d-grid gap-2">
+              <% @movie.movie_ratings.select { |r| r.rating == j }.each do |r| %>
+                <% if r.user.present? %>
+                  <div class="badge bg-secondary"><%= r.user&.email || "Unknown User" %></div>
+            <% end %>
+              <% end %>
+            </div>
           </div>
         </div>
       <% end %>
@@ -121,13 +134,22 @@
 
 </div>
 
-
-
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("turbo:load", function () {
+        const toggleLinks = document.querySelectorAll(".toggle-user-list");
+        toggleLinks.forEach(function (link) {
+            link.addEventListener("click", function (event) {
+                event.preventDefault();
+                const rating = this.getAttribute("data-rating");
+                const list = document.getElementById("user-list-" + rating);
+                if (list) {
+                    list.classList.toggle("d-none");
+                }
+            });
+        });
+
         const stars = document.querySelectorAll("#star-container i");
         const ratingInput = document.getElementById("rating-value");
-
         let selectedRating = 0;
 
         stars.forEach(star => {
@@ -142,7 +164,6 @@
 
             star.addEventListener("click", function () {
                 const value = parseInt(this.getAttribute("data-value"));
-
                 if (selectedRating === value) {
                     selectedRating = 0;
                     ratingInput.value = "";
@@ -150,7 +171,6 @@
                     selectedRating = value;
                     ratingInput.value = value;
                 }
-
                 highlightStars(selectedRating);
             });
         });
@@ -170,7 +190,6 @@
             });
         }
     });
-
 </script>
 
 <style>

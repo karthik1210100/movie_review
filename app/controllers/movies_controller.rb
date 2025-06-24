@@ -19,7 +19,7 @@ class MoviesController < ApplicationController
 
   # GET /movies/1 or /movies/1.json
   def show
-    @rating = @movie.group_by_rating
+    @movie = Movie.includes(movie_ratings: :user).find(params[:id])
   end
 
   # GET /movies/new
@@ -71,7 +71,7 @@ class MoviesController < ApplicationController
   end
 
   def movie_rating
-    if @movie.movie_ratings.exists?(:user_id=>[current_user.id] ) !=true
+    if !@movie.movie_ratings.exists?(user_id: current_user.id)
       @movie.movie_ratings.create(rating: movie_params.dig('rating'), user_id: current_user.id)
       avg_rating = @movie.movie_ratings.average(:rating)
       @movie.update_columns(average_rating: avg_rating)
@@ -97,12 +97,10 @@ class MoviesController < ApplicationController
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
   def set_movie
     @movie = Movie.find(params[:id])
   end
 
-  # Only allow a list of trusted parameters through.
   def movie_params
     params.require(:movie).permit(:name, :released_at, :rating, :avatar, :trailer_url)
   end
