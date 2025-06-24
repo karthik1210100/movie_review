@@ -57,7 +57,7 @@
 
           <div class="small text-muted mt-2">
             <a href="#" data-toggle="collapse" data-target="#rating-<%= j %>" class="text-decoration-none">
-              <%= pluralize(Movie.find(@movie.id).movie_ratings.group(:rating).count[j] || 0, "vote") %>
+              <%= pluralize(@movie.movie_ratings.group(:rating).count[j] || 0, "vote") %>
             </a>
           </div>
 

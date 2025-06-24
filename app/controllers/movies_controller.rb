@@ -2,7 +2,6 @@ class MoviesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_movie, only: %i[ show edit update destroy movie_rating]
 
-
   # GET /movies or /movies.json
   def index
     @movies = Movie.order('average_rating DESC')
@@ -13,7 +12,7 @@ class MoviesController < ApplicationController
 
     @movies = @movies.name_search(params[:q]) if params[:q].present?
 
-    @movies = @movies.includes(avatar_attachment: :blob)
+    @movies = @movies.includes(:tags, avatar_attachment: :blob)
                      .paginate(page: params[:page], per_page: 9)
   end
 
@@ -34,23 +33,22 @@ class MoviesController < ApplicationController
   # POST /movies or /movies.json
   def create
     @movie = Movie.new(movie_params)
-    @movie.user_id = current_user.id
+    @movie.user = current_user
+    @movie.tag_list = params[:movie][:tag_list] if params[:movie][:tag_list].present?
 
-    respond_to do |format|
-      if @movie.save
-        format.html { redirect_to movie_url(@movie), notice: "Movie created successfully." }
-        format.json { render :show, status: :created, location: @movie }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @movie.errors, status: :unprocessable_entity }
-      end
+    if @movie.save
+      redirect_to @movie, notice: "Movie created successfully."
+    else
+      render :new, status: :unprocessable_entity
     end
   end
 
   # PATCH/PUT /movies/1 or /movies/1.json
   def update
     respond_to do |format|
-      if @movie.update(movie_params)
+      @movie.tag_list = params[:movie][:tag_list] if params[:movie][:tag_list].present?
+
+      if @movie.update(movie_params.except(:tag_list))
         format.html { redirect_to movie_url(@movie), notice: "Movie updated successfully." }
         format.json { render :show, status: :ok, location: @movie }
       else

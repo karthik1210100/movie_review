@@ -9,4 +9,12 @@
     <%= movie.released_at %>
   </p>
 
+  <% if movie.tags.present? %>
+    <p>
+      <strong>Tags:</strong>
+      <% movie.tags.each do |tag| %>
+        <span class="badge"><%= tag.name %></span>
+      <% end %>
+    </p>
+  <% end %>
 </div>

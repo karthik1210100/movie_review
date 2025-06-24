@@ -1,8 +1,12 @@
 class Movie < ApplicationRecord
+  acts_as_taggable_on :tags
+
   belongs_to :user
   has_many :movie_ratings, dependent: :destroy
   has_many :reviews, dependent: :destroy
   has_one_attached :avatar, dependent: :destroy
+
+  before_validation :normalize_tags
 
   validates :name, presence: true, uniqueness: true
 
@@ -31,5 +35,10 @@ class Movie < ApplicationRecord
     end
 
     self.trailer_url = "https://www.youtube.com/embed/#{video_id}" if video_id.present?
+  end
+
+  def normalize_tags
+    self.tag_list = tag_list.map(&:strip).reject(&:blank?) if tag_list.is_a?(Array)
+    self.tag_list = tag_list.split(',').map(&:strip).reject(&:blank?) if tag_list.is_a?(String)
   end
 end
