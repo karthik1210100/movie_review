@@ -6,6 +6,8 @@ Rails.application.routes.draw do
   }
   devise_scope :user do
     get 'users/sign_out' => 'users/sessions#destroy'
+    get 'send_welcome_email', to: 'users/registrations#send_welcome_email'
+    get 'account_cancelled_email', to: 'users/registrations#account_cancelled_email'
   end
 
   root 'movies#index'
