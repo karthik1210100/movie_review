@@ -114,13 +114,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_26_075245) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "otp_secret"
-    t.integer "consumed_timestep"
-    t.boolean "otp_required_for_login"
-    t.string "otp_code"
-    t.datetime "otp_sent_at"
-    t.string "pin_code"
-    t.string "pin_code_digest"
     t.string "first_name"
     t.string "last_name"
     t.string "location"

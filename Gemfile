@@ -78,3 +78,7 @@ gem 'cancancan'
 gem "image_processing", ">= 1.2"
 gem "will_paginate", "~> 3.3"
 gem 'acts-as-taggable-on'
+group :development, :test do
+  gem 'rspec-rails'
+  gem 'factory_bot_rails'
+end
