@@ -1,40 +1,15 @@
 class MoviesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_movie, only: %i[ show edit update destroy movie_rating]
+  before_action :set_movie, only: %i[show edit update destroy movie_rating]
 
-  # GET /movies or /movies.json
-  def index
-    @movies = Movie.order('average_rating DESC')
-
-    if params[:start_date].present? && params[:end_date].present?
-      @movies = @movies.movie_filter(params[:start_date], params[:end_date])
-    end
-
-    @movies = @movies.name_search(params[:q]) if params[:q].present?
-
-    @movies = @movies.includes(:tags, avatar_attachment: :blob)
-                     .paginate(page: params[:page], per_page: 9)
+  %i[index show new edit].each do |action|
+    define_method(action) { __send__("handle_#{action}") }
   end
 
-  # GET /movies/1 or /movies/1.json
-  def show
-    @movie = Movie.includes(movie_ratings: :user).find(params[:id])
-  end
-
-  # GET /movies/new
-  def new
-    @movie = Movie.new
-  end
-
-  # GET /movies/1/edit
-  def edit
-  end
-
-  # POST /movies or /movies.json
   def create
     @movie = Movie.new(movie_params)
     @movie.user = current_user
-    @movie.tag_list = params[:movie][:tag_list] if params[:movie][:tag_list].present?
+    process_tags
 
     if @movie.save
       redirect_to @movie, notice: "Movie created successfully."
@@ -43,11 +18,9 @@ class MoviesController < ApplicationController
     end
   end
 
-  # PATCH/PUT /movies/1 or /movies/1.json
   def update
+    process_tags
     respond_to do |format|
-      @movie.tag_list = params[:movie][:tag_list] if params[:movie][:tag_list].present?
-
       if @movie.update(movie_params.except(:tag_list))
         format.html { redirect_to movie_url(@movie), notice: "Movie updated successfully." }
         format.json { render :show, status: :ok, location: @movie }
@@ -58,10 +31,8 @@ class MoviesController < ApplicationController
     end
   end
 
-  # DELETE /movies/1 or /movies/1.json
   def destroy
     @movie.destroy
-
     respond_to do |format|
       format.html { redirect_to root_url, notice: "Movie destroyed successfully." }
       format.json { head :no_content }
@@ -69,31 +40,51 @@ class MoviesController < ApplicationController
   end
 
   def movie_rating
-    if !@movie.movie_ratings.exists?(user_id: current_user.id)
-      @movie.movie_ratings.create(rating: movie_params.dig('rating'), user_id: current_user.id)
-      avg_rating = @movie.movie_ratings.average(:rating)
-      @movie.update_columns(average_rating: avg_rating)
+    rating = movie_params.dig('rating')
+    rating_record = @movie.movie_ratings.find_or_initialize_by(user_id: current_user.id)
+    rating_record.rating = rating
 
-      respond_to do |format|
-        format.html {
-          redirect_to [@movie],
-                      notice: "Rated successfully." }
-        # format.js { flash[:notice] = "Movie was successfully rated." }
-      end
-    else
-      @movie.movie_ratings.find_by(:user_id=>current_user.id).update(rating: movie_params.dig('rating'))
-      avg_rating = @movie.movie_ratings.average(:rating)
-      @movie.update_columns(average_rating: avg_rating)
-      respond_to do |format|
-        format.html {
-          redirect_to [@movie],
-                      notice: "Rating updated." }
-        # format.js { flash[:notice] = "Movie was successfully updated." }
-      end
+    if rating_record.save
+      update_average_rating
+      redirect_to @movie, notice: rating_record.new_record? ? "Rated successfully." : "Rating updated."
     end
   end
 
   private
+
+  def handle_index
+    @movies = Movie.order('average_rating DESC')
+    apply_filters
+    @movies = @movies.includes(:tags, avatar_attachment: :blob)
+                     .paginate(page: params[:page], per_page: 9)
+  end
+
+  def handle_show
+    @movie = Movie.includes(movie_ratings: :user).find(params[:id])
+  end
+
+  def handle_new
+    @movie = Movie.new
+  end
+
+  def handle_edit
+  end
+
+  def apply_filters
+    if params[:start_date].present? && params[:end_date].present?
+      @movies = @movies.movie_filter(params[:start_date], params[:end_date])
+    end
+    @movies = @movies.name_search(params[:q]) if params[:q].present?
+  end
+
+  def process_tags
+    @movie.tag_list = params[:movie][:tag_list] if params[:movie][:tag_list].present?
+  end
+
+  def update_average_rating
+    avg_rating = @movie.movie_ratings.average(:rating)
+    @movie.update_columns(average_rating: avg_rating)
+  end
 
   def set_movie
     @movie = Movie.find(params[:id])
