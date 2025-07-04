@@ -61,4 +61,8 @@ class Movie < ApplicationRecord
       movie_ratings.send("#{stat}", :rating)
     end
   end
+
+  def average_rating
+    self[:average_rating]
+  end
 end

@@ -54,22 +54,16 @@
           background-color: #f0f0f0;
       }
 
-      .alert, .notice {
+      .flash-messages {
           max-width: 600px;
           margin: 15px auto;
-          padding: 12px 20px;
+          padding: 0 15px;
+      }
+
+      .flash-messages .alert {
           border-radius: 5px;
-          font-size: 14px;
-      }
-
-      .alert {
-          background-color: #f8d7da;
-          color: #721c24;
-      }
-
-      .notice {
-          background-color: #d4edda;
-          color: #155724;
+          padding: 12px 20px;
+          margin-bottom: 15px;
       }
   </style>
 </head>
@@ -112,10 +106,25 @@
   </div>
 </nav>
 
-<% flash.each do |key, message| %>
-  <p class="<%= key == "alert" ? "alert" : "notice" %>"><%= message %></p>
-<% end %>
+<div class="flash-messages">
+  <% flash.each do |key, message| %>
+    <div class="alert alert-<%= key == 'notice' ? 'success' : 'danger' %> alert-dismissible fade show" role="alert">
+      <%= message %>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  <% end %>
+</div>
 
 <%= yield %>
+
+<script>
+    $(document).ready(function() {
+        setTimeout(function() {
+            $('.alert').alert('close');
+        }, 3000);
+    });
+</script>
 </body>
 </html>

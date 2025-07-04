@@ -20,15 +20,16 @@
           <div class="card-body d-flex flex-column">
             <%= render movie %>
 
-            <% if movie.average_rating %>
+            <% rating = movie[:average_rating] || movie.read_attribute(:average_rating) %>
+            <% if rating.present? %>
               <div class="rating-section mt-3">
                 <strong>Average Rating:</strong>
                 <div class="progress rounded-pill" role="progressbar"
-                     aria-valuenow="<%= movie.average_rating.to_f.round(2) %>"
+                     aria-valuenow="<%= rating.to_f.round(2) %>"
                      aria-valuemin="0" aria-valuemax="5">
                   <div class="progress-bar progress-bar-striped progress-bar-animated bg-info text-dark font-weight-bold"
-                       style="width: <%= movie.average_rating.to_f * 20 %>%;">
-                    <%= number_with_precision(movie.average_rating, precision: 2) %>/5
+                       style="width: <%= rating.to_f * 20 %>%;">
+                    <%= number_with_precision(rating, precision: 2) %>/5
                   </div>
                 </div>
               </div>
