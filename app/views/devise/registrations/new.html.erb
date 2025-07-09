@@ -11,6 +11,21 @@
         <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control", placeholder: "Enter your email", required: true %>
       </div>
 
+      <div class="field mb-3">
+        <%= f.label :first_name, class: "form-label" %>
+        <%= f.text_field :first_name, autocomplete: "given-name", class: "form-control", placeholder: "Enter your first name", required: true %>
+      </div>
+
+      <div class="field mb-3">
+        <%= f.label :last_name, class: "form-label" %>
+        <%= f.text_field :last_name, autocomplete: "family-name", class: "form-control", placeholder: "Enter your last name", required: true %>
+      </div>
+
+      <div class="field mb-3">
+        <%= f.label :location, class: "form-label" %>
+        <%= f.text_field :location, autocomplete: "postal-address-level2", class: "form-control", placeholder: "Enter your location" %>
+      </div>
+
       <div class="mb-3">
         <%= f.label :password, class: "form-label" %>
         <% if @minimum_password_length %>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+      body {
+          font-family: Arial, sans-serif;
+          background-color: #f7f9fc;
+          padding: 20px;
+          color: #333;
+      }
+
+      .container {
+          max-width: 600px;
+          margin: auto;
+          background-color: #ffffff;
+          padding: 30px;
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      }
+
+      h1 {
+          color: #2c3e50;
+      }
+
+      p {
+          font-size: 16px;
+          line-height: 1.6;
+      }
+
+      .footer {
+          margin-top: 30px;
+          font-size: 13px;
+          color: #888;
+      }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Welcome to MovieReview, <%= @user.first_name.present? ? @user.first_name : @user.email %>!</h1>
+
+  <p>We're thrilled to have you with us. 🎬</p>
+
+  <p>
+    At <strong>MovieReview</strong>, you'll be able to:
+  <ul>
+    <li>Share your thoughts on the latest films</li>
+    <li>Rate movies and read reviews from others</li>
+    <li>Build your personal movie watchlist</li>
+  </ul>
+  </p>
+
+  <p>
+    If you have any questions, feel free to reply to this email.
+    We're here to help.
+  </p>
+
+  <p>Happy watching,<br>
+    – The MovieReview Team 🍿</p>
+
+  <div class="footer">
+    © <%= Time.current.year %> MovieReview. All rights reserved.
+  </div>
+</div>
+</body>
+</html>
