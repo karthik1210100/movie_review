@@ -1,24 +1,30 @@
-# README
+# Movie Review
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+![Ruby on Rails](https://img.shields.io/badge/Ruby_on_Rails-CC0000?style=flat&logo=rubyonrails&logoColor=white)
+![RSpec](https://img.shields.io/badge/Tested_with-RSpec-brightgreen?style=flat)
 
-Things you may want to cover:
+A full-stack movie review web application built with Ruby on Rails, where users can browse movies, write and rate reviews, and discuss them through comments.
 
-* Ruby version
+## ✨ Features
 
-* System dependencies
+- User accounts
+- Browse and manage movies
+- Write, edit, and delete reviews
+- Rate movies and reviews
+- Comment on reviews (threaded discussion)
+- Role-based authorization with CanCanCan
 
-* Configuration
+## 🛠️ Built with
 
-* Database creation
+- Ruby on Rails
+- Active Record
+- CanCanCan (authorization)
+- RSpec (tests)
 
-* Database initialization
+## 🚀 Getting started
 
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+```bash
+bundle install
+rails db:setup
+rails server   # runs at http://localhost:3000
+```
