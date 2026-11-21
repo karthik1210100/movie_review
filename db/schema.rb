@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_06_26_075245) do
+ActiveRecord::Schema[7.1].define(version: 2025_11_21_090000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -40,11 +40,14 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_26_075245) do
   end
 
   create_table "movie_ratings", force: :cascade do |t|
-    t.integer "movie_id"
-    t.integer "rating"
-    t.integer "user_id"
+    t.integer "movie_id", null: false
+    t.integer "rating", null: false
+    t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["movie_id"], name: "index_movie_ratings_on_movie_id"
+    t.index ["user_id", "movie_id"], name: "index_movie_ratings_on_user_and_movie", unique: true
+    t.index ["user_id"], name: "index_movie_ratings_on_user_id"
   end
 
   create_table "movies", force: :cascade do |t|
@@ -52,10 +55,11 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_26_075245) do
     t.date "released_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "user_id"
+    t.integer "user_id", null: false
     t.float "average_rating"
     t.integer "movie_ratings_count"
     t.string "trailer_url"
+    t.index ["user_id"], name: "index_movies_on_user_id"
   end
 
   create_table "reviews", force: :cascade do |t|
@@ -63,8 +67,9 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_26_075245) do
     t.integer "movie_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "user_id"
+    t.integer "user_id", null: false
     t.index ["movie_id"], name: "index_reviews_on_movie_id"
+    t.index ["user_id"], name: "index_reviews_on_user_id"
   end
 
   create_table "taggings", force: :cascade do |t|
@@ -100,10 +105,12 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_26_075245) do
 
   create_table "user_review_comments", force: :cascade do |t|
     t.string "comment"
-    t.integer "review_id"
-    t.integer "user_id"
+    t.integer "review_id", null: false
+    t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["review_id"], name: "index_user_review_comments_on_review_id"
+    t.index ["user_id"], name: "index_user_review_comments_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -123,6 +130,12 @@ ActiveRecord::Schema[7.0].define(version: 2025_06_26_075245) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "movie_ratings", "movies"
+  add_foreign_key "movie_ratings", "users"
+  add_foreign_key "movies", "users"
   add_foreign_key "reviews", "movies"
+  add_foreign_key "reviews", "users"
   add_foreign_key "taggings", "tags"
+  add_foreign_key "user_review_comments", "reviews"
+  add_foreign_key "user_review_comments", "users"
 end

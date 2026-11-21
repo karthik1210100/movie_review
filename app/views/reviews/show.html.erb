@@ -24,7 +24,7 @@
 </div>
 
 <%# Comments Table %>
-<% if @review.user_review_comments.size > 1 %>
+<% if @review.user_review_comments.exists? %>
   <div class="card shadow-sm mb-5">
     <div class="card-header bg-primary text-white fw-semibold">
       Comments

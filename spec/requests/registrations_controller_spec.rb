@@ -1,27 +1,29 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Users::RegistrationsController, type: :request do
-  describe "POST /users" do
-    it "sends welcome email after successful registration" do
+  describe 'POST /users' do
+    it 'sends welcome email after successful registration' do
       ActionMailer::Base.deliveries.clear
 
-      expect {
+      expect do
         post user_registration_path, params: {
           user: {
-            email: "newuser@example.com",
-            password: "password123",
-            password_confirmation: "password123",
-            first_name: "New",
-            last_name: "User"
+            email: 'newuser@example.com',
+            password: 'password123',
+            password_confirmation: 'password123',
+            first_name: 'New',
+            last_name: 'User'
           }
         }
-      }.to change(User, :count).by(1)
+      end.to change(User, :count).by(1)
 
       expect(response).to redirect_to(movies_path)
     end
   end
 
-  describe "DELETE /users" do
+  describe 'DELETE /users' do
     let!(:user) { create(:user) }
 
     before do
@@ -29,7 +31,7 @@ RSpec.describe Users::RegistrationsController, type: :request do
       ActionMailer::Base.deliveries.clear
     end
 
-    it "sends cancellation email after account deletion" do
+    it 'sends cancellation email after account deletion' do
       delete user_registration_path
 
       expect(ActionMailer::Base.deliveries.count).to eq(1)

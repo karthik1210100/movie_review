@@ -2,35 +2,62 @@ name: "Ruby on Rails CI"
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   test:
     name: RSpec test suite
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04 # ships libvips >= 8.15, required by Rails 8 Active Storage
     env:
       RAILS_ENV: test
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Ruby 3.1.3
+      - name: Install image libraries
+        run: sudo apt-get update && sudo apt-get install -y libvips42
+
+      - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.1.3"
-
-      - name: Install dependencies
-        run: |
-          gem install bundler -v 2.4.3
-          bundle config set --local frozen false
-          bundle lock --add-platform x86_64-linux
-          bundle install --jobs 4 --retry 3
+          ruby-version: .ruby-version   # single source of truth
+          bundler-cache: true           # runs bundle install and caches gems
 
       - name: Set up the test database
         run: bundle exec rails db:schema:load
 
       - name: Run RSpec
         run: bundle exec rspec
+
+  security:
+    name: Security scans (SAST + dependency audit + lint)
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install image libraries
+        run: sudo apt-get update && sudo apt-get install -y libvips42
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Brakeman (static application security testing)
+        run: bundle exec brakeman --no-pager --exit-on-warn
+
+      - name: bundler-audit (dependency CVE scan)
+        run: |
+          bundle exec bundle-audit update
+          bundle exec bundle-audit check
+
+      - name: RuboCop (style + security cops)
+        run: bundle exec rubocop --parallel

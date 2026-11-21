@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UserMailer < ApplicationMailer
   default from: 'no-reply@movie_review_app.com'
 
@@ -11,6 +13,8 @@ class UserMailer < ApplicationMailer
   end
 
   def account_cancelled_email(user)
+    return if user.nil?
+
     @user = user
     mail(to: @user.email, subject: "We're sorry to see you go!")
   end

@@ -33,3 +33,6 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+
+# JetBrains / RubyMine IDE files (may contain local paths & data source config)
+/.idea

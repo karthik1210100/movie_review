@@ -1,96 +1,98 @@
+# frozen_string_literal: true
+
 class MoviesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_movie, only: %i[show edit update destroy movie_rating]
+  before_action :set_movie, only: %i[edit update destroy movie_rating]
+  before_action :authorize_movie!, only: %i[edit update destroy]
 
-  %i[index show new edit].each do |action|
-    define_method(action) { __send__("handle_#{action}") }
+  # GET /movies
+  def index
+    @movies = filtered_movies
+              .includes(:tags, avatar_attachment: :blob)
+              .paginate(page: params[:page], per_page: 9)
   end
 
+  # GET /movies/:id
+  def show
+    @movie = Movie.includes(movie_ratings: :user).find(params.expect(:id))
+  end
+
+  # GET /movies/new
+  def new
+    @movie = current_user.movies.new
+  end
+
+  # GET /movies/:id/edit
+  def edit; end
+
+  # POST /movies
   def create
-    @movie = Movie.new(movie_params)
-    @movie.user = current_user
-    process_tags
+    @movie = current_user.movies.new(movie_params)
 
     if @movie.save
-      redirect_to @movie, notice: "Movie created successfully."
+      redirect_to @movie, notice: 'Movie created successfully.'
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
+  # PATCH/PUT /movies/:id
   def update
-    process_tags
-    respond_to do |format|
-      if @movie.update(movie_params.except(:tag_list))
-        format.html { redirect_to movie_url(@movie), notice: "Movie updated successfully." }
-        format.json { render :show, status: :ok, location: @movie }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @movie.errors, status: :unprocessable_entity }
-      end
+    if @movie.update(movie_params)
+      redirect_to @movie, notice: 'Movie updated successfully.'
+    else
+      render :edit, status: :unprocessable_content
     end
   end
 
+  # DELETE /movies/:id
   def destroy
     @movie.destroy
-    respond_to do |format|
-      format.html { redirect_to root_url, notice: "Movie destroyed successfully." }
-      format.json { head :no_content }
-    end
+    redirect_to root_url, notice: 'Movie destroyed successfully.', status: :see_other
   end
 
+  # POST /movies/:id/movie_rating
   def movie_rating
-    rating = movie_params.dig('rating')
-    rating_record = @movie.movie_ratings.find_or_initialize_by(user_id: current_user.id)
-    rating_record.rating = rating
+    authorize! :create, MovieRating
 
-    if rating_record.save
-      update_average_rating
-      redirect_to @movie, notice: rating_record.new_record? ? "Rated successfully." : "Rating updated."
+    rating = @movie.movie_ratings.find_or_initialize_by(user: current_user)
+    created = rating.new_record?
+    rating.rating = rating_param
+
+    if rating.save
+      @movie.refresh_average_rating!
+      redirect_to @movie, notice: created ? 'Rated successfully.' : 'Rating updated.'
+    else
+      redirect_to @movie, alert: rating.errors.full_messages.to_sentence
     end
   end
 
   private
 
-  def handle_index
-    @movies = Movie.order('average_rating DESC')
-    apply_filters
-    @movies = @movies.includes(:tags, avatar_attachment: :blob)
-                     .paginate(page: params[:page], per_page: 9)
-  end
-
-  def handle_show
-    @movie = Movie.includes(movie_ratings: :user).find(params[:id])
-  end
-
-  def handle_new
-    @movie = Movie.new
-  end
-
-  def handle_edit
-  end
-
-  def apply_filters
+  def filtered_movies
+    scope = Movie.popular_movies # highest average rating first
     if params[:start_date].present? && params[:end_date].present?
-      @movies = @movies.movie_filter(params[:start_date], params[:end_date])
+      scope = scope.movie_filter(params[:start_date], params[:end_date])
     end
-    @movies = @movies.name_search(params[:q]) if params[:q].present?
-  end
-
-  def process_tags
-    @movie.tag_list = params[:movie][:tag_list] if params[:movie][:tag_list].present?
-  end
-
-  def update_average_rating
-    avg_rating = @movie.movie_ratings.average(:rating)
-    @movie.update_columns(average_rating: avg_rating)
+    scope.name_search(params[:q])
   end
 
   def set_movie
-    @movie = Movie.find(params[:id])
+    @movie = Movie.find(params.expect(:id))
   end
 
+  def authorize_movie!
+    authorize! action_name.to_sym, @movie
+  end
+
+  # Only allow a trusted list of attributes through (mass-assignment guard).
   def movie_params
-    params.require(:movie).permit(:name, :released_at, :rating, :avatar, :trailer_url)
+    params.expect(movie: %i[name released_at avatar trailer_url tag_list])
+  end
+
+  # The star-rating widget posts the score as movie[rating]; keep it isolated
+  # from movie_params so it can never be used for mass assignment on Movie.
+  def rating_param
+    params.expect(movie: [:rating])[:rating]
   end
 end

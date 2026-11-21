@@ -87,7 +87,10 @@
         </a>
         <div class="dropdown-menu dropdown-menu-right">
           <%= link_to 'Edit Profile', edit_user_registration_path, class: 'dropdown-item' %>
-          <%= link_to 'Log Out', destroy_user_session_path, method: :delete, data: { confirm: 'Are you sure?' }, class: 'dropdown-item' %>
+          <%= button_to 'Log Out', destroy_user_session_path, method: :delete,
+                        form_class: 'dropdown-item p-0',
+                        data: { turbo_confirm: 'Are you sure?' },
+                        class: 'btn btn-link dropdown-item text-start' %>
         </div>
       </div>
     <% else %>
@@ -119,7 +122,7 @@
 
 <%= yield %>
 
-<script>
+<script nonce="<%= content_security_policy_nonce %>">
     $(document).ready(function() {
         setTimeout(function() {
             $('.alert').alert('close');

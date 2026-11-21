@@ -12,13 +12,15 @@
       <%= render @movie %>
     </div>
 
-    <!-- Trailer video content -->
-    <% if @movie.trailer_url.present? %>
+    <!-- Trailer video content (only a validated YouTube embed URL is ever rendered) -->
+    <% if (trailer_embed = @movie.safe_trailer_embed_url) %>
       <div class="d-flex justify-content-center mt-4">
         <iframe
           width="560"
           height="315"
-          src="<%= @movie.trailer_url %>"
+          src="<%= trailer_embed %>"
+          referrerpolicy="strict-origin-when-cross-origin"
+          sandbox="allow-scripts allow-same-origin allow-presentation"
           frameborder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowfullscreen>
@@ -134,7 +136,7 @@
 
 </div>
 
-<script>
+<script nonce="<%= content_security_policy_nonce %>">
     document.addEventListener("turbo:load", function () {
         const toggleLinks = document.querySelectorAll(".toggle-user-list");
         toggleLinks.forEach(function (link) {
