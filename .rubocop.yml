@@ -27,6 +27,13 @@ Style/FrozenStringLiteralComment:
 
 Layout/LineLength:
   Max: 120
+  Exclude:
+    - "db/seeds.rb" # tabular seed data reads better on single lines
+
+# Seed scripts are naturally long, linear data loaders.
+Metrics/BlockLength:
+  Exclude:
+    - "db/seeds.rb"
 
 Metrics/MethodLength:
   Max: 20
