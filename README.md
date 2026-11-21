@@ -27,13 +27,29 @@ browse movies, write and rate reviews, and discuss them through comments.
 
 ## 🚀 Getting started
 
+### Option A — Docker (no local Ruby needed)
+
+```bash
+docker compose up --build
+```
+
+Then open **http://localhost:3000**. The database is created and seeded automatically.
+
+### Option B — Local Ruby
+
 Requires Ruby (see `.ruby-version`) and **libvips ≥ 8.13** (Active Storage image
-processing). On Ubuntu: `sudo apt-get install -y libvips42`.
+processing). On Ubuntu: `sudo apt-get install -y libvips42`; on macOS: `brew install vips`.
 
 ```bash
 bundle install
-rails db:setup
-rails server   # runs at http://localhost:3000
+bin/rails db:setup   # create + load schema + seed
+bin/rails server     # runs at http://localhost:3000
+```
+
+### Demo login
+
+```
+demo@example.com / password123
 ```
 
 ## ✅ Quality & security checks

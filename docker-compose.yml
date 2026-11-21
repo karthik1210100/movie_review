@@ -1,0 +1,14 @@
+# Run the whole app with one command, no host Ruby/libvips needed:
+#
+#   docker compose up --build
+#
+# Then open http://localhost:3000  (demo login: demo@example.com / password123)
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      RAILS_ENV: development
+    stdin_open: true
+    tty: true

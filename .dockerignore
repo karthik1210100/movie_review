@@ -1,0 +1,15 @@
+.git
+.github
+.idea
+log/*
+tmp/*
+storage/*
+db/*.sqlite3
+db/*.sqlite3-*
+public/assets
+node_modules
+coverage
+spec/examples.txt
+*.log
+README.md
+SECURITY_REVIEW.md
