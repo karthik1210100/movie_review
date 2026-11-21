@@ -2,12 +2,15 @@
 #
 #   docker compose up --build
 #
-# Then open http://localhost:3000  (demo login: demo@example.com / password123)
+# Then open http://localhost:3100  (demo login: demo@example.com / password123)
+#
+# Host port 3100 is used to avoid clashing with anything already on 3000.
+# Override it if you like:  HOST_PORT=4000 docker compose up --build
 services:
   web:
     build: .
     ports:
-      - "3000:3000"
+      - "${HOST_PORT:-3100}:3000"
     environment:
       RAILS_ENV: development
     stdin_open: true

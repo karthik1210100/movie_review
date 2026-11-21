@@ -33,7 +33,9 @@ browse movies, write and rate reviews, and discuss them through comments.
 docker compose up --build
 ```
 
-Then open **http://localhost:3000**. The database is created and seeded automatically.
+Then open **http://localhost:3100**. The database is created and seeded automatically.
+(Host port is `3100` to avoid clashing with anything on `3000`; override with
+`HOST_PORT=4000 docker compose up --build`.)
 
 ### Option B — Local Ruby
 
