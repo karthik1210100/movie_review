@@ -17,13 +17,16 @@ class Ability
     # Browsing the catalogue and discussions is open to any signed-in user.
     can :read, [Movie, Review, UserReviewComment]
 
-    # Any signed-in user may contribute content...
-    can :create, [Movie, Review, UserReviewComment, MovieRating]
+    # Any signed-in user may contribute content and engage...
+    can :create, [Movie, Review, UserReviewComment, MovieRating,
+                  WatchlistItem, ReviewHelpfulVote, ReviewReport]
 
     # ...but may only modify or remove the records they own.
     can %i[update destroy], Movie, user_id: user.id
     can %i[update destroy], Review, user_id: user.id
     can %i[update destroy], UserReviewComment, user_id: user.id
     can %i[update destroy], MovieRating, user_id: user.id
+    can :destroy, WatchlistItem, user_id: user.id
+    can :destroy, ReviewHelpfulVote, user_id: user.id
   end
 end

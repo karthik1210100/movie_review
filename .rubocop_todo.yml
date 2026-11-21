@@ -30,7 +30,7 @@ Metrics/MethodLength:
 Metrics/PerceivedComplexity:
   Max: 13
 
-# Offense count: 13
+# Offense count: 18
 Rails/I18nLocaleTexts:
   Exclude:
     - 'app/controllers/application_controller.rb'
@@ -38,6 +38,7 @@ Rails/I18nLocaleTexts:
     - 'app/controllers/reviews_controller.rb'
     - 'app/controllers/user_review_comments_controller.rb'
     - 'app/mailers/user_mailer.rb'
+    - 'app/models/review_report.rb'
 
 # Offense count: 1
 Rails/LexicallyScopedActionFilter:

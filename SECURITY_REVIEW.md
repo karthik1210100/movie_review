@@ -94,6 +94,17 @@ ActionPack issues), on an **EOL** Ruby 3.1 and EOL Rails line.
 `sqlite3 2.x`, `addressable`, `msgpack`, `ruby-vips`, etc. `bundler-audit` now reports
 **0 vulnerabilities**. Added `brakeman` + `bundler-audit` + `rubocop` as CI gates.
 
+## Later additions (security-relevant)
+- **Rate limiting (Rack::Attack):** throttles on login (by IP and by email), sign-up,
+  and password-reset, plus a wide per-IP backstop, returning `429`. Localhost is
+  safelisted. `config/initializers/rack_attack.rb`; tested in
+  `spec/requests/rate_limiting_spec.rb`.
+- **Email privacy:** user-facing pages (reviews, comments, rating breakdown,
+  profiles) now show a `display_name` and link to a public profile instead of
+  rendering the account email address.
+- **Report-a-review:** users can flag reviews (reason from a fixed list, one per
+  user per review) for moderation.
+
 ## Residual items / recommended follow-ups
 - **Framework defaults:** the app runs Rails 8.1 with `config.load_defaults 7.0` (the safe
   incremental-upgrade posture). Bumping defaults to `8.1` should be done as a separate,

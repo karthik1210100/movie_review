@@ -7,6 +7,7 @@ ruby '3.3.14'
 
 # --- Framework -------------------------------------------------------------
 gem 'puma', '~> 7.2', '>= 7.2.2' # patched for GHSA-xw3h-pgr9-3vg7 (100-Continue reactor stall)
+gem 'rack-attack' # rate limiting / brute-force & abuse protection
 gem 'rails', '~> 8.1.0'
 gem 'sprockets-rails'
 # Pin to the 2.x line: json 3.x drops the legacy quirks_mode keyword that the

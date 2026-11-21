@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_11_21_090000) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_21_100005) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -59,7 +59,31 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_21_090000) do
     t.float "average_rating"
     t.integer "movie_ratings_count"
     t.string "trailer_url"
+    t.text "description"
+    t.string "director"
+    t.integer "runtime"
     t.index ["user_id"], name: "index_movies_on_user_id"
+  end
+
+  create_table "review_helpful_votes", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "review_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["review_id"], name: "index_review_helpful_votes_on_review_id"
+    t.index ["user_id", "review_id"], name: "index_review_helpful_votes_on_user_id_and_review_id", unique: true
+    t.index ["user_id"], name: "index_review_helpful_votes_on_user_id"
+  end
+
+  create_table "review_reports", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "review_id", null: false
+    t.string "reason", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["review_id"], name: "index_review_reports_on_review_id"
+    t.index ["user_id", "review_id"], name: "index_review_reports_on_user_id_and_review_id", unique: true
+    t.index ["user_id"], name: "index_review_reports_on_user_id"
   end
 
   create_table "reviews", force: :cascade do |t|
@@ -68,6 +92,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_21_090000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.boolean "spoiler", default: false, null: false
     t.index ["movie_id"], name: "index_reviews_on_movie_id"
     t.index ["user_id"], name: "index_reviews_on_user_id"
   end
@@ -128,14 +153,30 @@ ActiveRecord::Schema[7.1].define(version: 2025_11_21_090000) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "watchlist_items", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "movie_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["movie_id"], name: "index_watchlist_items_on_movie_id"
+    t.index ["user_id", "movie_id"], name: "index_watchlist_items_on_user_id_and_movie_id", unique: true
+    t.index ["user_id"], name: "index_watchlist_items_on_user_id"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "movie_ratings", "movies"
   add_foreign_key "movie_ratings", "users"
   add_foreign_key "movies", "users"
+  add_foreign_key "review_helpful_votes", "reviews"
+  add_foreign_key "review_helpful_votes", "users"
+  add_foreign_key "review_reports", "reviews"
+  add_foreign_key "review_reports", "users"
   add_foreign_key "reviews", "movies"
   add_foreign_key "reviews", "users"
   add_foreign_key "taggings", "tags"
   add_foreign_key "user_review_comments", "reviews"
   add_foreign_key "user_review_comments", "users"
+  add_foreign_key "watchlist_items", "movies"
+  add_foreign_key "watchlist_items", "users"
 end

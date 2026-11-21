@@ -16,6 +16,11 @@
     <%= form.text_field :about, required: true  %>
   </div>
 
+  <div class="form-check my-2">
+    <%= form.check_box :spoiler, class: "form-check-input" %>
+    <%= form.label :spoiler, "⚠️ This review contains spoilers", class: "form-check-label" %>
+  </div>
+
   <div>
     <% if controller.action_name == 'edit' %>
       <%= form.submit "Edit Review" %>

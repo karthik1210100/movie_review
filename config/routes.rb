@@ -10,8 +10,18 @@ Rails.application.routes.draw do
 
   resources :movies do
     resources :reviews do
+      member do
+        post :helpful   # toggle "this review was helpful"
+        post :report    # report a review
+      end
       resources :user_review_comments
     end
-    post :movie_rating, on: :member
+    member do
+      post :movie_rating
+      post :watchlist   # toggle add/remove from the current user's watchlist
+    end
   end
+
+  resource :watchlist, only: :show                 # the current user's watchlist
+  resources :users, only: :show                    # public profile pages
 end

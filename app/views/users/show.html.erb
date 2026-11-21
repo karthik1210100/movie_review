@@ -1,0 +1,53 @@
+<div class="container py-5">
+  <div class="d-flex align-items-center mb-4 gap-3">
+    <% if @user.avatar.attached? %>
+      <%= image_tag @user.avatar, class: "rounded-circle", style: "width:72px;height:72px;object-fit:cover;" %>
+    <% else %>
+      <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center"
+           style="width:72px;height:72px;font-size:28px;"><%= @user.display_name.first&.upcase %></div>
+    <% end %>
+    <div>
+      <h1 class="h3 mb-0"><%= @user.display_name %></h1>
+      <span class="text-muted small">
+        <%= pluralize(@user.movies.count, "movie") %> ·
+        <%= pluralize(@user.reviews.count, "review") %> ·
+        <%= pluralize(@user.movie_ratings.count, "rating") %>
+      </span>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-4">
+      <h2 class="h5">Recent reviews</h2>
+      <% if @reviews.any? %>
+        <ul class="list-group">
+          <% @reviews.each do |review| %>
+            <li class="list-group-item">
+              <%= link_to review.movie.name, review.movie, class: "fw-semibold text-decoration-none" %>
+              <% if review.spoiler %><span class="badge bg-danger ms-1">spoiler</span><% end %>
+              <div class="small text-muted"><%= truncate(review.about, length: 120) %></div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="text-muted">No reviews yet.</p>
+      <% end %>
+    </div>
+
+    <div class="col-md-6 mb-4">
+      <h2 class="h5">Recent ratings</h2>
+      <% if @ratings.any? %>
+        <ul class="list-group">
+          <% @ratings.each do |rating| %>
+            <li class="list-group-item d-flex justify-content-between">
+              <%= link_to rating.movie.name, rating.movie, class: "text-decoration-none" %>
+              <span class="text-warning"><%= "★" * rating.rating %><span class="text-muted"><%= "★" * (5 - rating.rating) %></span></span>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="text-muted">No ratings yet.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

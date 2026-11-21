@@ -10,12 +10,14 @@ browse movies, write and rate reviews, and discuss them through comments.
 
 ## ✨ Features
 
-- User accounts (Devise)
-- Browse and manage movies (image uploads via Active Storage, tags via acts-as-taggable-on)
-- Write, edit, and delete reviews — and comment on reviews
-- Rate movies (1–5, one rating per user) with a denormalized average
-- YouTube trailer embedding (validated to canonical embed URLs)
-- Role/ownership-based authorization with CanCanCan
+- User accounts (Devise) with public **profile pages** (ratings & reviews, never the email)
+- Rich movie pages: **synopsis, director, runtime, poster**, tags and trailer
+- **Discovery**: sort (top-rated / newest / A–Z), one-click **genre filter**, name search & date range
+- Write, edit, delete reviews — with **spoiler tags**, **helpful votes**, **report-a-review**, and threaded comments
+- Rate movies (1–5, one per user) with a denormalized average and rating breakdown
+- **Watchlist** — save movies to watch later
+- YouTube trailer embedding (validated to canonical embed URLs, sandboxed iframe)
+- Role/ownership-based authorization (CanCanCan) and **Rack::Attack rate limiting** on auth
 
 ## 🛠️ Built with
 

@@ -2,11 +2,12 @@
 
 class MoviesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_movie, only: %i[edit update destroy movie_rating]
+  before_action :set_movie, only: %i[edit update destroy movie_rating watchlist]
   before_action :authorize_movie!, only: %i[edit update destroy]
 
   # GET /movies
   def index
+    @genres = ActsAsTaggableOn::Tag.order(:name).limit(30)
     @movies = filtered_movies
               .includes(:tags, avatar_attachment: :blob)
               .paginate(page: params[:page], per_page: 9)
@@ -67,14 +68,29 @@ class MoviesController < ApplicationController
     end
   end
 
+  # POST /movies/:id/watchlist  (toggle)
+  def watchlist
+    item = current_user.watchlist_items.find_by(movie: @movie)
+    if item
+      item.destroy
+      redirect_to @movie, notice: 'Removed from your watchlist.'
+    else
+      authorize! :create, WatchlistItem
+      current_user.watchlist_items.create!(movie: @movie)
+      redirect_to @movie, notice: 'Added to your watchlist.'
+    end
+  end
+
   private
 
   def filtered_movies
-    scope = Movie.popular_movies # highest average rating first
+    scope = Movie.sorted_by(params[:sort])
+                 .genre(params[:genre])
+                 .name_search(params[:q])
     if params[:start_date].present? && params[:end_date].present?
       scope = scope.movie_filter(params[:start_date], params[:end_date])
     end
-    scope.name_search(params[:q])
+    scope
   end
 
   def set_movie
@@ -87,7 +103,8 @@ class MoviesController < ApplicationController
 
   # Only allow a trusted list of attributes through (mass-assignment guard).
   def movie_params
-    params.expect(movie: %i[name released_at avatar trailer_url tag_list])
+    params.expect(movie: %i[name released_at avatar trailer_url tag_list
+                            description director runtime])
   end
 
   # The star-rating widget posts the score as movie[rating]; keep it isolated

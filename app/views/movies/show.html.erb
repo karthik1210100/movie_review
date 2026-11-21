@@ -1,15 +1,37 @@
 <div class="container py-5">
 
   <div class="card border-0 shadow-lg mb-5 p-4">
-    <div class="text-center mb-4">
-      <% if @movie.avatar.present? %>
-        <%= image_tag(@movie.avatar, size: "250x250", class: "rounded-circle shadow-sm") %>
-      <% else %>
-        <%= image_tag("https://via.placeholder.com/250?text=No+Image", class: "rounded-circle shadow-sm") %>
-      <% end %>
-    </div>
-    <div class="text-center">
-      <%= render @movie %>
+    <div class="row g-4">
+      <div class="col-md-4 text-center">
+        <% if @movie.avatar.present? %>
+          <%= image_tag(@movie.avatar, class: "img-fluid rounded shadow-sm movie-poster") %>
+        <% else %>
+          <%= image_tag("https://via.placeholder.com/300x440?text=No+Poster", class: "img-fluid rounded shadow-sm movie-poster") %>
+        <% end %>
+      </div>
+      <div class="col-md-8">
+        <%= render @movie %>
+
+        <ul class="list-inline text-muted mb-3">
+          <% if @movie.director.present? %>
+            <li class="list-inline-item me-4"><strong>🎬 Director:</strong> <%= @movie.director %></li>
+          <% end %>
+          <% if @movie.runtime_label %>
+            <li class="list-inline-item"><strong>⏱️ Runtime:</strong> <%= @movie.runtime_label %></li>
+          <% end %>
+        </ul>
+
+        <% if @movie.description.present? %>
+          <p class="lead fs-6"><%= simple_format(@movie.description) %></p>
+        <% end %>
+
+        <%# Watchlist toggle %>
+        <% in_watchlist = current_user.watchlist_items.exists?(movie_id: @movie.id) %>
+        <%= button_to watchlist_movie_path(@movie),
+                      class: "btn #{in_watchlist ? 'btn-warning' : 'btn-outline-warning'} rounded-pill px-4" do %>
+          <%= in_watchlist ? "★ In your watchlist — remove" : "☆ Add to watchlist" %>
+        <% end %>
+      </div>
     </div>
 
     <!-- Trailer video content (only a validated YouTube embed URL is ever rendered) -->
@@ -67,7 +89,7 @@
             <div class="d-grid gap-2">
               <% @movie.movie_ratings.select { |r| r.rating == j }.each do |r| %>
                 <% if r.user.present? %>
-                  <div class="badge bg-secondary"><%= r.user&.email || "Unknown User" %></div>
+                  <div class="badge bg-secondary"><%= r.user ? r.user.display_name : "Unknown User" %></div>
             <% end %>
               <% end %>
             </div>
@@ -100,11 +122,34 @@
             <% next unless review.about %>
             <tr>
               <td>
-                <p class="mb-1 fw-semibold"><%= review.about %></p>
+                <% if review.spoiler %>
+                  <details>
+                    <summary class="text-danger fw-semibold" style="cursor: pointer;">⚠️ Spoiler — click to reveal</summary>
+                    <p class="mb-1 fw-semibold mt-2"><%= review.about %></p>
+                  </details>
+                <% else %>
+                  <p class="mb-1 fw-semibold"><%= review.about %></p>
+                <% end %>
                 <small class="text-muted">
-                  By: <%= review.user&.email || 'User Suspended' %> &bull;
-                  Comments: <%= review.user_review_comments.count %>
+                  By
+                  <% if review.user %>
+                    <%= link_to review.user.display_name, user_path(review.user), class: "text-decoration-none" %>
+                  <% else %>
+                    User suspended
+                  <% end %>
+                  &bull; Comments: <%= review.user_review_comments.count %>
                 </small>
+                <div class="mt-2 d-flex gap-2 align-items-center flex-wrap">
+                  <%= button_to helpful_movie_review_path(@movie, review),
+                                class: "btn btn-sm #{review.marked_helpful_by?(current_user) ? 'btn-success' : 'btn-outline-success'}" do %>
+                    👍 Helpful (<%= review.helpful_count %>)
+                  <% end %>
+                  <%= form_with url: report_movie_review_path(@movie, review), method: :post, class: "d-flex gap-1 mb-0" do |f| %>
+                    <%= f.select :reason, ReviewReport::REASONS, { prompt: "Report…" },
+                                 class: "form-select form-select-sm", style: "width: auto;" %>
+                    <%= f.submit "⚑", class: "btn btn-sm btn-outline-secondary" %>
+                  <% end %>
+                </div>
               </td>
               <td class="text-center">
                 <%= link_to "💬 Comments", movie_review_path(@movie, review), class: 'btn btn-outline-info btn-sm px-3' %>
@@ -195,6 +240,13 @@
 </script>
 
 <style>
+    .movie-poster {
+        max-height: 440px;
+        object-fit: cover;
+        width: 100%;
+        max-width: 300px;
+    }
+
     .card {
         border-radius: 12px;
         background: #fff;

@@ -9,12 +9,22 @@ class Movie < ApplicationRecord
   YOUTUBE_EMBED_URL = %r{\Ahttps://www\.youtube\.com/embed/[\w-]{11}\z}
   YOUTUBE_ID = /\A[\w-]{11}\z/
 
+  # Whitelisted sort options for the discovery page (key => ORDER BY).
+  SORTS = {
+    'top' => { average_rating: :desc },
+    'newest' => { released_at: :desc },
+    'title' => { name: :asc }
+  }.freeze
+
   belongs_to :user
   has_many :movie_ratings, dependent: :destroy
   has_many :reviews, dependent: :destroy
-  has_one_attached :avatar, dependent: :purge_later
+  has_many :watchlist_items, dependent: :destroy
+  has_many :watchers, through: :watchlist_items, source: :user
+  has_one_attached :avatar, dependent: :purge_later # the movie poster
 
   validates :name, presence: true, uniqueness: { case_sensitive: false }
+  validates :runtime, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validate :trailer_url_must_be_youtube
 
   scope :recent_movies,  -> { order(released_at: :desc) }
@@ -29,6 +39,15 @@ class Movie < ApplicationRecord
     # SQLite/Postgres, so user-supplied % and _ are matched literally.
     where("LOWER(name) LIKE ? ESCAPE '\\'", "%#{sanitize_sql_like(query.downcase)}%")
   }
+  # Discovery: sort by a whitelisted key, and filter by tag/genre.
+  scope :sorted_by, ->(key) { order(SORTS.fetch(key, SORTS['top'])) }
+  scope :genre, ->(tag) { tag.present? ? tagged_with(tag) : all }
+
+  def runtime_label
+    return if runtime.blank?
+
+    "#{runtime / 60}h #{runtime % 60}m"
+  end
 
   before_validation :normalize_tags
   before_validation :canonicalize_trailer_url

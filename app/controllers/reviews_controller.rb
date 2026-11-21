@@ -3,12 +3,35 @@
 class ReviewsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_movie
-  before_action :set_review, only: %i[show edit update destroy]
+  before_action :set_review, only: %i[show edit update destroy helpful report]
   before_action :authorize_review!, only: %i[edit update destroy]
 
   # GET /movies/:movie_id/reviews
   def index
     @reviews = @movie.reviews.includes(:user)
+  end
+
+  # POST /movies/:movie_id/reviews/:id/helpful  (toggle)
+  def helpful
+    vote = @review.review_helpful_votes.find_by(user: current_user)
+    if vote
+      vote.destroy
+    else
+      authorize! :create, ReviewHelpfulVote
+      @review.review_helpful_votes.create!(user: current_user)
+    end
+    redirect_to [@movie, @review], notice: 'Thanks for your feedback.'
+  end
+
+  # POST /movies/:movie_id/reviews/:id/report
+  def report
+    authorize! :create, ReviewReport
+    report = @review.review_reports.new(user: current_user, reason: params[:reason])
+    if report.save
+      redirect_to [@movie, @review], notice: 'Review reported. Our team will take a look.'
+    else
+      redirect_to [@movie, @review], alert: report.errors.full_messages.to_sentence
+    end
   end
 
   # GET /movies/:movie_id/reviews/:id
@@ -64,6 +87,6 @@ class ReviewsController < ApplicationController
   end
 
   def review_params
-    params.expect(review: [:about])
+    params.expect(review: %i[about spoiler])
   end
 end
